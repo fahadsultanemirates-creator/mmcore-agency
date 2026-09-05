@@ -266,9 +266,7 @@ function escapeHtml(str) {
 // and enforced server-side by payram-create-payment -- kept here too so the
 // USDT option can display an amount even when PayRam itself is unreachable.
 const UPFRONT_FRACTION = 0.3;
-// TODO: replace with M&MCore's own USDT (BEP20) receiving address before
-// launch -- this is a placeholder, not a real wallet.
-const USDT_BEP20_ADDRESS = '0x0000000000000000000000000000000000000000';
+const USDT_BEP20_ADDRESS = '0xdc496FcA8B8d2743b55Da0d082eAFc90f6609D8f';
 
 function upfrontAmountDue(agreedPrice) {
   return Math.round(agreedPrice * UPFRONT_FRACTION * 100) / 100;
@@ -330,6 +328,7 @@ function renderPaymentCTA(container, { requestId, amountDue, payram }) {
   usdtCol.innerHTML = `
     <p class="dash-card-note" style="margin:0 0 0.4rem;">Or pay ${formatMoney(amountDue)} in USDT (BEP20 / BNB Smart Chain):</p>
     <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+      <img src="images/usdt-bep20-qr.png" alt="USDT BEP20 address QR code" style="width:80px;height:80px;border-radius:6px;">
       <div>
         <code style="font-size:0.8rem;word-break:break-all;">${USDT_BEP20_ADDRESS}</code><br>
         <button type="button" class="btn btn-secondary btn-sm copy-usdt-address-btn" style="margin-top:0.3rem;">Copy address</button>

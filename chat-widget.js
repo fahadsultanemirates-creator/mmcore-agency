@@ -1,41 +1,13 @@
-// M&MCore Agency — homepage chat widget. Deliberately dependency-free
-// (no supabase-js SDK load on the marketing homepage for one endpoint) --
-// just a fetch() call authenticated with the same publishable anon key
-// already used in supabase-client.js. That key is safe for browser use by
-// design (security is enforced by RLS/the Edge Function itself, not by
-// hiding this key) -- duplicated here rather than pulling in the SDK.
-// Keep these two values in sync with supabase-client.js if they change.
-const CHAT_SUPABASE_URL = 'https://bnjbxjvnibotshxpdnsg.supabase.co';
-const CHAT_SUPABASE_ANON_KEY = 'sb_publishable_3KC3sqeONPkWRlQRYrMSuA_VNFlG6jG';
-const CHAT_ENDPOINT = `${CHAT_SUPABASE_URL}/functions/v1/widget-chat`;
+// M&MCore Agency — homepage chat widget. The visual widget (floating
+// button + panel) is in place now, but the AI assistant itself is
+// deferred until the rest of the site is finished -- there's no
+// widget-chat Edge Function behind this yet. It's a self-contained
+// placeholder: no network calls, just a static greeting and an instant
+// canned reply, plus a real link to Telegram for anyone who wants a
+// human now. Swap this file out once the assistant is actually built.
 const MANAGER_TELEGRAM_URL = 'https://t.me/mmcore_managers';
-const VISITOR_ID_STORAGE_KEY = 'mmcore_visitor_id';
-
-function getOrCreateVisitorId() {
-  let id = localStorage.getItem(VISITOR_ID_STORAGE_KEY);
-  if (!id) {
-    id = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    localStorage.setItem(VISITOR_ID_STORAGE_KEY, id);
-  }
-  return id;
-}
-
-async function callWidgetChat(payload) {
-  const resp = await fetch(CHAT_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${CHAT_SUPABASE_ANON_KEY}`,
-      apikey: CHAT_SUPABASE_ANON_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-  if (!resp.ok) {
-    const body = await resp.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed (${resp.status})`);
-  }
-  return resp.json();
-}
+const PLACEHOLDER_GREETING = "Hi! I'm the M&MCore assistant — I'm still being set up. For anything urgent right now, message us on Telegram and a real person will get back to you.";
+const PLACEHOLDER_REPLY = "Thanks for the message! I can't answer yet -- my setup isn't finished. Message us on Telegram below and a real person will help in the meantime.";
 
 function buildWidgetMarkup() {
   const wrap = document.createElement('div');
@@ -96,7 +68,6 @@ function removeTypingIndicator() {
 }
 
 (function initChatWidget() {
-  const visitorId = getOrCreateVisitorId();
   const widgetEl = buildWidgetMarkup();
   document.body.appendChild(widgetEl);
 
@@ -106,26 +77,18 @@ function removeTypingIndicator() {
   const form = document.getElementById('chatWidgetForm');
   const input = document.getElementById('chatWidgetInput');
 
-  let historyLoaded = false;
+  let greeted = false;
   let sending = false;
 
-  async function openPanel() {
+  function openPanel() {
     panel.hidden = false;
     toggleBtn.classList.add('is-open');
     toggleBtn.setAttribute('aria-expanded', 'true');
 
-    if (!historyLoaded) {
-      historyLoaded = true;
-      try {
-        const { messages } = await callWidgetChat({ visitorId, action: 'history' });
-        if (messages && messages.length) {
-          messages.forEach((m) => appendMessage(messagesEl, m.role, m.content));
-        } else {
-          appendMessage(messagesEl, 'assistant', "Hi! I'm the M&MCore assistant — ask me about pricing, services, or how to get started.");
-        }
-      } catch (e) {
-        appendMessage(messagesEl, 'assistant', "Hi! I'm the M&MCore assistant — ask me about pricing, services, or how to get started.");
-      }
+    if (!greeted) {
+      greeted = true;
+      appendMessage(messagesEl, 'assistant', PLACEHOLDER_GREETING);
+      appendHandoffLink(messagesEl);
     }
     input.focus();
   }
@@ -145,7 +108,7 @@ function removeTypingIndicator() {
     if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || sending) return;
@@ -156,24 +119,15 @@ function removeTypingIndicator() {
     input.disabled = true;
     appendTypingIndicator(messagesEl);
 
-    try {
-      const { reply, needsHuman } = await callWidgetChat({
-        visitorId,
-        action: 'message',
-        message: text,
-        languageHint: navigator.language
-      });
+    // No backend yet -- a short delay just keeps the "thinking" indicator
+    // from flashing instantly, so it still feels like a real reply.
+    setTimeout(() => {
       removeTypingIndicator();
-      appendMessage(messagesEl, 'assistant', reply);
-      if (needsHuman) appendHandoffLink(messagesEl);
-    } catch (err) {
-      removeTypingIndicator();
-      appendMessage(messagesEl, 'assistant', 'Something went wrong on our end. Please try again in a moment, or reach out directly on Telegram.');
+      appendMessage(messagesEl, 'assistant', PLACEHOLDER_REPLY);
       appendHandoffLink(messagesEl);
-    } finally {
       sending = false;
       input.disabled = false;
       input.focus();
-    }
+    }, 500);
   });
 })();
