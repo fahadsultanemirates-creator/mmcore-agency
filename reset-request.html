@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset your password — M&amp;MCore Agency</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a href="index.html" class="auth-logo" aria-label="Home">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="none" stroke="#E5169A" stroke-width="4"/><text x="50" y="63" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#E5169A">M&amp;M</text></svg>
+    </a>
+    <h1>Reset your password</h1>
+    <p class="auth-sub">Enter your email and we'll send you a link to set a new password.</p>
+
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-success" id="authSuccess"></div>
+
+    <form id="resetRequestForm">
+      <div class="field-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="email">
+      </div>
+      <button type="submit" class="btn btn-primary" id="resetRequestBtn">Send reset link</button>
+    </form>
+
+    <p class="auth-footer">Remembered it? <a href="login.html">Log in</a></p>
+    <p style="text-align:center;margin-top:var(--space-md);">
+      <a href="index.html" class="btn btn-primary btn-sm auth-home-btn">Home</a>
+    </p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>

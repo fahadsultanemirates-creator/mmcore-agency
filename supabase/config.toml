@@ -1,0 +1,18 @@
+# Supabase Edge Function config. Functions default to requiring a valid
+# Supabase JWT (verified by the platform before the function's own code
+# ever runs) -- fine for widget-chat (called with the anon key) and
+# forge-chat (called with the caller's real session token), but wrong
+# for functions that receive calls from external services authenticating
+# with their own signature scheme instead of a Supabase JWT.
+#
+# telegram-webhook has been deployed without this since PR #23 --
+# Telegram doesn't send a Supabase JWT, so every one of its calls has
+# been rejected with a 401 at the platform gate this whole time,
+# regardless of whether the webhook itself was registered with Telegram.
+# Found while building the PayRam webhook, which has the same shape.
+
+[functions.telegram-webhook]
+verify_jwt = false
+
+[functions.payram-webhook]
+verify_jwt = false

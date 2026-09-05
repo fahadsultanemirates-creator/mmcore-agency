@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — M&amp;MCore Agency</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="none" stroke="#E5169A" stroke-width="4"/><text x="50" y="63" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#E5169A">M&amp;M</text></svg>
+      M&amp;MCore
+    </a>
+    <div class="nav-links">
+      <a href="services.html">Services</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="business-pool.html">Business Pool</a>
+      <a href="referral.html">Referrals</a>
+    </div>
+    <div class="nav-cta">
+      <a href="index.html" class="btn btn-primary btn-sm">Home</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<header class="dash-header">
+  <div class="container">
+    <h1 id="welcomeHeading">Welcome back</h1>
+    <div class="dash-top-grid">
+      <div class="dash-card">
+        <span class="panel-tag">Your referral link</span>
+        <div class="referral-link-row">
+          <input type="text" id="referralLinkInput" readonly aria-label="Your referral link">
+          <button type="button" class="btn btn-secondary btn-sm" id="copyReferralBtn">Copy</button>
+        </div>
+        <p class="dash-card-note">Earn 20% in Points on everyone you refer directly, on their first 3 paid projects.</p>
+      </div>
+      <div class="dash-card">
+        <span class="panel-tag">M&amp;MCore Points</span>
+        <div class="points-balance" id="pointsBalance">—</div>
+        <p class="dash-card-note">1 Point = $1 of credit toward any service.</p>
+      </div>
+      <div class="dash-card" id="supportCard">
+        <span class="panel-tag">Support</span>
+        <p class="dash-card-note">Our AI agent specialist is available on Telegram, 24/7.</p>
+        <a href="https://t.me/mmcore_support" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Message us on Telegram</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="bp-section">
+  <div class="container">
+    <div class="bp-card" id="bpCard">
+      <div class="bp-card-main">
+        <span class="panel-tag">Business Pool</span>
+        <div class="bp-progress-wrap" id="bpProgressWrap">
+          <div class="bp-progress-track"><div class="bp-progress-fill" id="bpProgressFill"></div></div>
+          <p class="bp-progress-text" id="bpProgressText">$0 / $3,250</p>
+        </div>
+        <p class="bp-unlocked-text" id="bpUnlockedText" style="display:none;">You're in — a dedicated human manager is handling your account.</p>
+        <a href="https://t.me/mmcore_managers" class="btn btn-primary btn-sm" id="bpManagerBtn" target="_blank" rel="noopener" style="display:none;">Message your manager</a>
+      </div>
+      <ul class="bp-perks" id="bpPerksList">
+        <li>20% off all services — applied automatically</li>
+        <li>A dedicated human Telegram manager</li>
+        <li>A custom design package included every month</li>
+        <li>Faster delivery on every request</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="dash-body">
+  <div class="container dash-layout">
+    <div class="dash-tabs" id="dashTabs" role="tablist">
+      <button type="button" class="dash-tab active" data-tab="projects">My Projects</button>
+      <button type="button" class="dash-tab" data-tab="new-request">New Request</button>
+      <button type="button" class="dash-tab" data-tab="packages">Starter Package</button>
+      <button type="button" class="dash-tab" data-tab="billing">Billing</button>
+    </div>
+
+    <div class="dash-panels">
+
+      <div class="dash-panel active" id="panel-projects">
+        <h2>Pending requests</h2>
+        <p class="dash-empty" id="requestsEmpty">You don't have any pending requests.</p>
+        <div class="request-list" id="requestsList"></div>
+
+        <h2 style="margin-top:var(--space-xl);">My Projects</h2>
+        <p class="dash-empty" id="projectsEmpty">No projects yet — submit a New Request to get started.</p>
+        <div class="project-list" id="projectsList"></div>
+      </div>
+
+      <div class="dash-panel" id="panel-new-request">
+        <h2>New Request</h2>
+        <div class="dash-note">Please read our <a href="terms.html">payment and delivery policy</a> before placing a request. Prefer a fixed-price bundle? See the <a href="packages.html">M&amp;MCore Starter Package</a>.</div>
+        <div class="dash-error" id="requestError"></div>
+        <div class="dash-success" id="requestSuccess"></div>
+
+        <div class="wizard" id="requestWizard">
+          <ol class="wizard-steps" id="wizardStepsIndicator">
+            <li data-step="1" class="active">1. Service</li>
+            <li data-step="2">2. Task</li>
+            <li data-step="3">3. Details</li>
+            <li data-step="4">4. Submit</li>
+          </ol>
+
+          <div class="wizard-step active" data-step="1">
+            <h3>What service do you need?</h3>
+            <div class="wizard-options" id="wizardServiceOptions"></div>
+          </div>
+
+          <div class="wizard-step" data-step="2">
+            <h3>Which task?</h3>
+            <p class="dash-card-note" style="margin:0 0 var(--space-sm);">One standard tier, one price — shown next to each option below.</p>
+            <div class="wizard-options" id="wizardTaskOptions"></div>
+          </div>
+
+          <div class="wizard-step" data-step="3">
+            <h3>Tell us what you need</h3>
+            <div class="field-group">
+              <label for="reqDescription">Describe what you need</label>
+              <textarea id="reqDescription" rows="5" placeholder="Plain language is fine — no forms to fill out beyond this."></textarea>
+            </div>
+            <div class="field-group">
+              <label for="reqAttachment">Attach a file <span style="color:var(--text-tertiary);font-weight:400;">(optional — reference images, briefs, existing branding, etc.)</span></label>
+              <input type="file" id="reqAttachment" accept="image/*,.pdf,.doc,.docx">
+              <p class="dash-card-note" id="attachmentStatus"></p>
+            </div>
+            <div class="field-group points-toggle-row" id="pointsToggleRow" style="display:none;">
+              <label class="points-toggle-label">
+                <input type="checkbox" id="applyPointsToggle">
+                Apply my M&amp;MCore Points to this request
+              </label>
+              <p class="dash-card-note" id="pointsToggleNote"></p>
+            </div>
+          </div>
+
+          <div class="wizard-step" data-step="4">
+            <h3>Review &amp; submit</h3>
+            <dl class="wizard-summary-list" id="wizardSummary"></dl>
+            <button type="button" class="btn btn-primary" id="submitRequestBtn">Submit request</button>
+          </div>
+
+          <div class="wizard-nav">
+            <button type="button" class="btn btn-secondary btn-sm" id="wizardBackBtn" style="display:none;">← Back</button>
+            <button type="button" class="btn btn-primary btn-sm" id="wizardNextBtn" style="display:none;">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="panel-packages">
+        <h2>M&amp;MCore Starter Package</h2>
+        <div class="dash-note">One fixed-price bundle, one standard tier — a landing page, social content, branded documents, and a strategy report, all in one order. Includes 50% off any additional service. <a href="packages.html">See full package details →</a></div>
+        <div class="dash-error" id="packageError"></div>
+        <div class="dash-success" id="packageSuccess"></div>
+
+        <div class="wizard-option-card" style="max-width:360px;margin-bottom:var(--space-lg);cursor:default;">
+          <span>M&amp;MCore Starter Package</span>
+          <span class="wizard-option-price" id="packagePrice">—</span>
+        </div>
+
+        <div class="field-group">
+          <label for="pkgDescription">Describe what you need</label>
+          <textarea id="pkgDescription" rows="5" placeholder="Business name, branding direction, what the landing page/socials/reports should cover, etc."></textarea>
+        </div>
+        <div class="field-group">
+          <label for="pkgAttachment">Attach a file <span style="color:var(--text-tertiary);font-weight:400;">(optional — reference images, briefs, existing branding, etc.)</span></label>
+          <input type="file" id="pkgAttachment" accept="image/*,.pdf,.doc,.docx">
+          <p class="dash-card-note" id="pkgAttachmentStatus"></p>
+        </div>
+        <button type="button" class="btn btn-primary" id="submitPackageBtn">Submit package order</button>
+
+        <div id="addonSection" style="display:none;">
+          <h2 style="margin-top:var(--space-xl);">Add a service at 50% off</h2>
+          <div class="dash-note">Active M&amp;MCore Package clients get 50% off any additional service below.</div>
+          <div class="dash-error" id="addonError"></div>
+          <div class="dash-success" id="addonSuccess"></div>
+
+          <div class="wizard" id="addonWizard">
+            <ol class="wizard-steps" id="addonStepsIndicator">
+              <li data-step="1" class="active">1. Service</li>
+              <li data-step="2">2. Task</li>
+              <li data-step="3">3. Details</li>
+              <li data-step="4">4. Submit</li>
+            </ol>
+
+            <div class="wizard-step active" data-step="1">
+              <h3>What service do you need?</h3>
+              <div class="wizard-options" id="addonServiceOptions"></div>
+            </div>
+
+            <div class="wizard-step" data-step="2">
+              <h3>Which task?</h3>
+              <div class="wizard-options" id="addonTaskOptions"></div>
+            </div>
+
+            <div class="wizard-step" data-step="3">
+              <h3>Tell us what you need</h3>
+              <div class="field-group">
+                <label for="addonDescription">Describe what you need</label>
+                <textarea id="addonDescription" rows="5"></textarea>
+              </div>
+              <div class="field-group">
+                <label for="addonAttachment">Attach a file <span style="color:var(--text-tertiary);font-weight:400;">(optional)</span></label>
+                <input type="file" id="addonAttachment" accept="image/*,.pdf,.doc,.docx">
+                <p class="dash-card-note" id="addonAttachmentStatus"></p>
+              </div>
+            </div>
+
+            <div class="wizard-step" data-step="4">
+              <h3>Review &amp; submit</h3>
+              <dl class="wizard-summary-list" id="addonSummary"></dl>
+              <button type="button" class="btn btn-primary" id="submitAddonBtn">Submit at 50% off</button>
+            </div>
+
+            <div class="wizard-nav">
+              <button type="button" class="btn btn-secondary btn-sm" id="addonBackBtn" style="display:none;">← Back</button>
+              <button type="button" class="btn btn-primary btn-sm" id="addonNextBtn" style="display:none;">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="dash-empty" id="addonLockedNote">Submit a package order above to unlock 50% off additional services.</p>
+      </div>
+
+      <div class="dash-panel" id="panel-billing">
+        <h2>Billing history</h2>
+        <div class="dash-note">Billing follows 30% upfront, 70% on completion, across every service and the package. <a href="terms.html">Read the full payment &amp; delivery policy →</a></div>
+        <p class="dash-empty" id="billingEmpty">No billing activity yet.</p>
+        <div class="billing-list" id="billingList"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth.js"></script>
+<script src="pricing-catalog.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

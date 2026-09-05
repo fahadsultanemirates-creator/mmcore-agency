@@ -1,0 +1,41 @@
+# HTML: always revalidate with the server, never serve a stale copy from the
+# browser cache. This is already Netlify's effective default when no custom
+# headers exist, but pinning it explicitly here means it stays correct even
+# if that default ever changes.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# CSS/JS: same treatment as HTML -- always revalidate, never serve a
+# stale copy straight from the browser cache. These were previously on a
+# 1-hour max-age, which just relocated the "stale index.html" bug onto
+# CSS/JS instead of fixing it: during active development, a fix could
+# ship, get merged, and still appear broken to a tester for up to an hour
+# because their browser was silently reusing pre-fix dashboard.js/
+# dashboard.css without even checking the server. None of these filenames
+# are content-hashed (main.css stays main.css across every deploy), so
+# there's no cache-busting alternative short of revalidating on every load.
+/*.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Images: unaffected by this class of bug (never gated a bugfix retest),
+# so they keep a longer cache.
+/*.jpg
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.jpeg
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.png
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.svg
+  Cache-Control: public, max-age=3600, must-revalidate

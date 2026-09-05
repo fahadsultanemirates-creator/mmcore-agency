@@ -1,0 +1,79 @@
+.admin-header {
+  padding: var(--space-xl) 0 var(--space-lg);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-xs);
+}
+
+.admin-sub {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.admin-body {
+  padding: var(--space-lg) 0 var(--space-2xl);
+}
+
+.admin-section {
+  margin-bottom: var(--space-xl);
+}
+
+.admin-section h2 {
+  font-size: 1.15rem;
+  margin-bottom: var(--space-sm);
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-table th, .admin-table td {
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-table th {
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table td {
+  color: var(--text-primary);
+}
+
+.admin-table select {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  margin-right: 0.4rem;
+}
+
+.admin-empty-row td {
+  color: var(--text-tertiary);
+  font-style: italic;
+}

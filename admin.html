@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — M&amp;MCore Agency</title>
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <svg viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" fill="none" stroke="#E5169A" stroke-width="4"/><text x="50" y="63" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#E5169A">M&amp;M</text></svg>
+      M&amp;MCore
+    </a>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+    </div>
+    <div class="nav-cta">
+      <a href="index.html" class="btn btn-primary btn-sm">Home</a>
+      <button type="button" class="btn btn-secondary btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </div>
+</nav>
+
+<header class="admin-header">
+  <div class="container">
+    <h1>Admin</h1>
+    <p class="admin-sub">Internal only. Every action here still re-checks admin status server-side — this page is a convenience, not the security boundary.</p>
+  </div>
+</header>
+
+<div id="adminGate" style="display:none;">
+  <div class="container">
+    <div class="note-box" style="max-width:500px;margin:var(--space-2xl) auto;text-align:center;">
+      This page is for M&amp;MCore admins only. If you believe this is a mistake, contact support.
+    </div>
+  </div>
+</div>
+
+<section class="admin-body" id="adminBody" style="display:none;">
+  <div class="container">
+
+    <div class="admin-section">
+      <h2>All Requests</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="requestsTable">
+          <thead><tr><th>User</th><th>Category</th><th>Task</th><th>Tier</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h2>All Projects</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="projectsTable">
+          <thead><tr><th>User</th><th>Project</th><th>Status</th><th>Revisions</th><th>Update status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h2>All Billing</h2>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="billingTable">
+          <thead><tr><th>User</th><th>Amount</th><th>Type</th><th>Status</th><th>Update status</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h2>Business Pool overrides</h2>
+      <p class="admin-sub">For edge cases — manually flag or unflag an account, outside the normal $3,250 automatic threshold.</p>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="profilesTable">
+          <thead><tr><th>User</th><th>Lifetime spend</th><th>Business Pool</th><th>Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="auth.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
