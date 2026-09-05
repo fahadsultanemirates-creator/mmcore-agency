@@ -5,10 +5,8 @@
 // design (security is enforced by RLS/the Edge Function itself, not by
 // hiding this key) -- duplicated here rather than pulling in the SDK.
 // Keep these two values in sync with supabase-client.js if they change.
-// TODO: replace with M&MCore's own Supabase project URL/key -- see the
-// comment at the top of supabase-client.js.
-const CHAT_SUPABASE_URL = 'REPLACE_WITH_MMCORE_SUPABASE_PROJECT_URL';
-const CHAT_SUPABASE_ANON_KEY = 'REPLACE_WITH_MMCORE_SUPABASE_PUBLISHABLE_KEY';
+const CHAT_SUPABASE_URL = 'https://bnjbxjvnibotshxpdnsg.supabase.co';
+const CHAT_SUPABASE_ANON_KEY = 'sb_publishable_3KC3sqeONPkWRlQRYrMSuA_VNFlG6jG';
 const CHAT_ENDPOINT = `${CHAT_SUPABASE_URL}/functions/v1/widget-chat`;
 const MANAGER_TELEGRAM_URL = 'https://t.me/mmcore_managers';
 const VISITOR_ID_STORAGE_KEY = 'mmcore_visitor_id';
