@@ -14,10 +14,7 @@
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="#" class="nav-logo">
-      <svg viewBox="0 0 100 100" fill="none">
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#E5169A" stroke-width="4"/>
-        <text x="50" y="63" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#E5169A">M&amp;M</text>
-      </svg>
+      <img src="images/logo.png" alt="M&amp;MCore">
       M&amp;MCore
     </a>
     <div class="nav-links">
@@ -36,13 +33,18 @@
 <!-- ============ HERO ============ -->
 <header class="hero">
   <canvas class="hero-network" id="heroNetwork"></canvas>
-  <div class="container hero-inner">
-    <span class="hero-eyebrow"><span class="dot"></span> Run by agents, not a call center</span>
-    <h1>A real, working <span class="accent">business</span> — not just a website.</h1>
-    <p class="hero-sub">Sites, branding, marketing, and books — scoped, built, and delivered by AI agents from a single dashboard. One straightforward tier per service, no markup for a "premium" version.</p>
-    <div class="hero-actions">
-      <a href="signup.html" class="btn btn-primary">Start your project</a>
-      <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
+  <div class="container hero-grid">
+    <div class="hero-inner">
+      <span class="hero-eyebrow"><span class="dot"></span> Run by agents, not a call center</span>
+      <h1>A real, working <span class="accent">business</span> — not just a website.</h1>
+      <p class="hero-sub">Sites, branding, marketing, and books — scoped, built, and delivered by AI agents from a single dashboard. One straightforward tier per service, no markup for a "premium" version.</p>
+      <div class="hero-actions">
+        <a href="signup.html" class="btn btn-primary">Start your project</a>
+        <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="images/photo-1.jpg" alt="AI agent working alongside business dashboards and analytics">
     </div>
   </div>
 </header>
@@ -175,11 +177,14 @@
 
 <!-- ============ WELCOME MESSAGE ============ -->
 <section class="welcome-message">
-  <div class="container">
+  <div class="container feature-row">
     <div class="section-head">
       <span class="section-eyebrow">No bloated team</span>
       <h2>No hires to manage. Just M&amp;MCore.</h2>
       <p>Your website, your social pages, your books, your paperwork — one place to get all of it handled, without carrying the overhead of a full-time team.</p>
+    </div>
+    <div class="feature-media">
+      <img src="images/photo-2.jpg" alt="Connected AI systems coordinating business operations">
     </div>
   </div>
 </section>
@@ -223,9 +228,10 @@
       <h2>One dashboard for everything</h2>
       <p>Projects, requests, billing, and referrals — nothing tucked away behind a separate page.</p>
     </div>
-    <div class="preview-frame preview-placeholder">
-      <span>Dashboard preview — drop your own screenshot in as <code>dashboard-preview.jpg</code> and swap the placeholder below for an <code>&lt;img&gt;</code> tag.</span>
+    <div class="preview-frame">
+      <img src="images/photo-3.jpg" alt="M&amp;MCore's AI-run dashboard and data pipeline">
     </div>
+    <p style="text-align:center;color:var(--text-tertiary);font-size:0.8rem;margin-top:var(--space-sm);">Placeholder visual — swap in a real dashboard screenshot as <code>images/photo-3.jpg</code> whenever you have one.</p>
   </div>
 </section>
 
@@ -275,10 +281,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#" class="nav-logo">
-          <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="#E5169A" stroke-width="4"/>
-            <text x="50" y="63" font-family="'Space Grotesk',sans-serif" font-weight="700" font-size="38" text-anchor="middle" fill="#E5169A">M&amp;M</text>
-          </svg>
+          <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
           M&amp;MCore
         </a>
         <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
