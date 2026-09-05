@@ -80,7 +80,7 @@ begin
   if new.status = 'paid' and (tg_op = 'INSERT' or old.status is distinct from 'paid') then
     update public.profiles
     set total_spend = total_spend + new.amount,
-        is_business_pool = is_business_pool or (total_spend + new.amount) >= 3250
+        is_business_pool = is_business_pool or (total_spend + new.amount) >= 5000
     where id = new.user_id;
 
     if new.project_id is not null then

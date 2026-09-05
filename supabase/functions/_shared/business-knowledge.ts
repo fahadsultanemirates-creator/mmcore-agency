@@ -154,7 +154,7 @@ DELIVERY & BILLING POLICY
   handover: files, access, and ownership, in full.
 
 BUSINESS POOL
-Once a client's lifetime spend crosses $3,250, their account
+Once a client's lifetime spend crosses $5,000, their account
 automatically upgrades to Business Pool — no application, no manual
 approval, and it's permanent once reached. Perks: a dedicated human
 manager reachable directly on Telegram (replacing the standard shared

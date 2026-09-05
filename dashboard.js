@@ -53,10 +53,8 @@ function renderHeader(profile) {
 }
 
 // -------- Business Pool section --------
-// Scaled down from AgenticCore's $5,000 threshold by the same 35% that
-// sets every M&MCore price, so it takes a proportionally similar amount
-// of work to reach — not a harder climb just because the prices are lower.
-const BUSINESS_POOL_THRESHOLD = 3250;
+// Same $5,000 lifetime-spend threshold as AgenticCore.
+const BUSINESS_POOL_THRESHOLD = 5000;
 
 function renderBusinessPoolSection(profile) {
   const progressWrap = document.getElementById('bpProgressWrap');

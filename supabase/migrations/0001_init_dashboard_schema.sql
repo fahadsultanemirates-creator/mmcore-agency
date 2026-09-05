@@ -194,7 +194,7 @@ for each row execute function public.set_updated_at();
 -- ============================================================
 -- Business Pool trigger: total_spend is a permanent lifetime total
 -- (refunds do not decrement it), and is_business_pool only ever
--- flips false -> true once total_spend crosses $3,250; never reverts.
+-- flips false -> true once total_spend crosses $5,000; never reverts.
 -- ============================================================
 
 create or replace function public.handle_billing_paid()
@@ -207,7 +207,7 @@ begin
   if new.status = 'paid' and (tg_op = 'INSERT' or old.status is distinct from 'paid') then
     update public.profiles
     set total_spend = total_spend + new.amount,
-        is_business_pool = is_business_pool or (total_spend + new.amount) >= 3250
+        is_business_pool = is_business_pool or (total_spend + new.amount) >= 5000
     where id = new.user_id;
   end if;
   return new;
