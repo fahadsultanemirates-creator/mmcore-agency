@@ -1,16 +1,38 @@
 // M&MCore Agency — receives PayRam's payment-confirmed webhook.
-// Public endpoint (server-to-server from PayRam, no Supabase JWT --
-// verify_jwt = false in ../../config.toml). Trusts nothing until the
-// X-Payram-Signature header is verified: HMAC-SHA256 of the *raw* body,
-// keyed with the same project API key used to create payments (PayRam
-// has no separate webhook signing secret despite what the dashboard
-// flow suggests).
+// Adapted from AgenticCore Agency's proven payram-webhook function (same
+// signature scheme, same idempotency ordering) -- only env var names
+// and M&MCore's own schema differ.
+//
+// Public endpoint (server-to-server, no Supabase JWT -- verify_jwt =
+// false in supabase/config.toml). Two ways in are trusted:
+//   1. PayRam itself, verified via the X-Payram-Signature header
+//      (HMAC-SHA256 of the *raw* body, keyed with the same project API
+//      key used to create payments -- PayRam has no separate webhook
+//      signing secret).
+//   2. .agency's shared PayRam relay: since M&MCore reuses .agency's
+//      PayRam project/keys (one shared wallet -- see
+//      payram-create-payment's header comment), PayRam's own webhook
+//      only ever reaches .agency's endpoint, which strips the
+//      "mmcore-" invoiceID prefix and re-dispatches M&MCore's events
+//      here. Those calls carry X-Internal-Relay-Secret instead of a
+//      PayRam signature -- if it matches INTERNAL_RELAY_SECRET, the
+//      payload is treated as pre-verified and PayRam's own signature
+//      check is skipped for that request only. Everything after
+//      authentication -- parsing, idempotency, the requests/billing
+//      writes -- is identical either way.
+//
+// invoice_id in the relayed payload still carries the "mmcore-" prefix
+// (the relay forwards the raw body unmodified) -- it is stripped here,
+// before the local requests.id lookup, since that column is a plain
+// uuid and would never match the prefixed string.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const PAYRAM_API_KEY = Deno.env.get('PAYRAM_API_KEY')!;
+const INTERNAL_RELAY_SECRET = Deno.env.get('INTERNAL_RELAY_SECRET') || undefined;
+const MMCORE_INVOICE_PREFIX = 'mmcore-';
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -51,16 +73,21 @@ export async function handleRequest(req: Request): Promise<Response> {
   // the exact bytes PayRam sent, before any JSON parsing.
   const rawBody = await req.text();
 
-  const signatureHeader = req.headers.get('X-Payram-Signature');
-  if (!signatureHeader || !signatureHeader.startsWith('sha256=')) {
-    return new Response('Unauthorized', { status: 401 });
-  }
+  const relaySecretHeader = req.headers.get('X-Internal-Relay-Secret');
+  const isVerifiedRelay = Boolean(INTERNAL_RELAY_SECRET) && Boolean(relaySecretHeader) && constantTimeEqual(relaySecretHeader!, INTERNAL_RELAY_SECRET!);
 
-  const expectedHex = await computeHmacSha256Hex(PAYRAM_API_KEY, rawBody);
-  const providedHex = signatureHeader.slice('sha256='.length);
+  if (!isVerifiedRelay) {
+    const signatureHeader = req.headers.get('X-Payram-Signature');
+    if (!signatureHeader || !signatureHeader.startsWith('sha256=')) {
+      return new Response('Unauthorized', { status: 401 });
+    }
 
-  if (!constantTimeEqual(providedHex, expectedHex)) {
-    return new Response('Unauthorized', { status: 401 });
+    const expectedHex = await computeHmacSha256Hex(PAYRAM_API_KEY, rawBody);
+    const providedHex = signatureHeader.slice('sha256='.length);
+
+    if (!constantTimeEqual(providedHex, expectedHex)) {
+      return new Response('Unauthorized', { status: 401 });
+    }
   }
 
   let payload: any;
@@ -70,12 +97,20 @@ export async function handleRequest(req: Request): Promise<Response> {
     return new Response('Bad request', { status: 400 });
   }
 
-  const invoiceId = payload?.invoice_id;
+  const rawInvoiceId = payload?.invoice_id;
   const status = payload?.status;
 
-  if (!invoiceId || typeof invoiceId !== 'string') {
+  if (!rawInvoiceId || typeof rawInvoiceId !== 'string') {
     return new Response('ok');
   }
+
+  // Strip the "mmcore-" prefix before using this as a local requests.id
+  // lookup -- PayRam's own invoice_id (and the relayed payload, which is
+  // forwarded unmodified) still carries it, but requests.id is a plain
+  // uuid column that would never match the prefixed string.
+  const invoiceId = rawInvoiceId.startsWith(MMCORE_INVOICE_PREFIX)
+    ? rawInvoiceId.slice(MMCORE_INVOICE_PREFIX.length)
+    : rawInvoiceId;
 
   if (!CONFIRMING_STATUSES.has(status)) {
     return new Response('ok');
@@ -87,10 +122,10 @@ export async function handleRequest(req: Request): Promise<Response> {
     .eq('id', invoiceId)
     .maybeSingle();
 
-  // A genuine query error (bad column, permissions, etc.) must NOT return
-  // 200 -- PayRam won't retry a 200, so a real server error disguised as
-  // "ok" would silently lose the confirmation for good. Only a truly
-  // missing request (no error, zero rows) acks 200 with no further action.
+  // A genuine query error must NOT return 200 -- PayRam won't retry a
+  // 200, so a real server error disguised as "ok" would silently lose
+  // the confirmation for good. Only a truly missing request (no error,
+  // zero rows) acks 200 with no further action.
   if (fetchError) {
     console.error('payram-webhook: request lookup errored', { invoiceId, fetchError });
     return new Response('Database error', { status: 500 });

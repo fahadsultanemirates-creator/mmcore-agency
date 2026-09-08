@@ -1,16 +1,29 @@
-// M&MCore Agency — shared front-desk bot logic, used by both the
-// homepage widget and Telegram Edge Functions. Channel-agnostic on
-// purpose: it takes plain text in, returns plain text out, and knows
-// nothing about HTTP requests or Telegram updates. That split is also
-// what keeps a future voice layer (STT before this, TTS after) from
-// requiring a rewrite -- it would wrap this function, not replace it.
+// M&MCore Agency — shared front-desk bot logic, used by the homepage
+// widget, Telegram, and the dashboard's own "Mint" project-intake
+// assistant. Channel-agnostic on purpose: it takes plain text in,
+// returns plain text out, and knows nothing about HTTP requests or
+// Telegram updates. That split is also what keeps a future voice layer
+// (STT before this, TTS after) from requiring a rewrite -- it would
+// wrap this function, not replace it.
+//
+// Unlike agenticcore-agency's version of this file (which keeps the
+// widget channel on OpenRouter and only moves telegram/forge to xAI),
+// M&MCore runs all three channels on xAI's Grok -- a deliberate choice
+// (Grok is already the API used for image/video generation elsewhere,
+// so standardizing avoids juggling two provider keys for one bot). The
+// channels still diverge on how much structure the reply carries:
+// widget keeps the original 4-field JSON (no task-filing -- an
+// anonymous visitor shouldn't be able to file a manager task), while
+// telegram and 'mint' (the dashboard's own assistant, M&MCore's name for
+// what agenticcore-agency calls "Forge") both use the expanded 7-field
+// JSON that can additionally file a manager_tasks row.
 
 import { BUSINESS_KNOWLEDGE_PROMPT } from './business-knowledge.ts';
 
 // deno-lint-ignore no-explicit-any
 type SupabaseAdmin = any;
 
-export type Channel = 'widget' | 'telegram';
+export type Channel = 'widget' | 'telegram' | 'mint';
 
 export interface BotConversation {
   id: string;
@@ -33,7 +46,8 @@ export interface HandleMessageParams {
   channel: Channel;
   externalId: string;
   userMessage: string;
-  openRouterApiKey: string;
+  xaiApiKey: string;
+  // Model override -- interpreted as an xAI model id.
   model?: string;
   // Optional signal from the transport layer (Telegram's per-user
   // language_code, or the browser's navigator.language) -- not a
@@ -49,11 +63,20 @@ export interface HandleMessageResult {
   rateLimited?: boolean;
 }
 
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const DEFAULT_MODEL = 'anthropic/claude-sonnet-5';
+const XAI_URL = 'https://api.x.ai/v1/chat/completions';
+const DEFAULT_XAI_MODEL = 'grok-4-1';
+
 const HISTORY_LIMIT = 30;
 const RATE_LIMIT_WINDOW_MINUTES = 10;
 const RATE_LIMIT_MAX_USER_MESSAGES = 20;
+
+// manager_tasks id scheme: "AC-MMCORE-0001" -- brand prefix + a count of
+// existing rows for that brand, zero-padded to 4 digits. No Postgres
+// sequence; see createManagerTask() below for how the count-then-insert
+// race is handled without one.
+const TASK_BRAND = 'mmcore';
+const TASK_ID_PREFIX = 'AC-MMCORE';
+const MAX_TASK_ID_ATTEMPTS = 3;
 
 // These two strings are the only bot-authored text that isn't produced
 // by the model itself -- rare system-level fallbacks (an actual outage,
@@ -65,6 +88,14 @@ const RATE_LIMIT_MESSAGE =
   "You're sending messages a bit too quickly — please wait a few minutes and try again.";
 const GENERIC_ERROR_MESSAGE =
   'Something went wrong on our end. Please try again in a moment, or reach out directly: https://t.me/mmcore_managers';
+
+// Additive context for the 'mint' channel only, appended on top of the
+// same BUSINESS_KNOWLEDGE_PROMPT every channel shares -- not a
+// replacement persona, just the extra framing Telegram doesn't need
+// (whoever's writing is already a signed-in client, not an anonymous
+// visitor, and the dashboard has no "/start" message to hang a greeting
+// off of the way Telegram does).
+const MINT_ADDITIVE_PROMPT = `You're "Mint", embedded directly in the client's own dashboard (not Telegram or the public homepage) -- whoever is writing is already a signed-in client, not an anonymous visitor. If the conversation history above is empty, this is the very first thing they've said to you here: open with a short, warm welcome and invite them to describe a project they'd like to start, rather than diving straight into an answer. If they want to start one, guide them through describing it one step at a time (service, scope, budget expectations, any specifics) rather than demanding everything at once, until you have enough to file it as a task for the team -- same create_task/task_title/task_type judgment you'd use anywhere else.`;
 
 export async function findOrCreateConversation(
   supabaseAdmin: SupabaseAdmin,
@@ -170,40 +201,135 @@ interface ParsedReply {
   uncertain: boolean;
 }
 
-async function callOpenRouter(
+// Telegram/Mint-only: adds create_task/task_title/task_type on top of
+// the base reply shape. task_title/task_type are always strings (empty
+// when create_task is false) rather than nullable, since strict
+// json_schema mode across providers handles a plain required string more
+// reliably than a nullable union.
+const MANAGER_REPLY_JSON_SCHEMA = {
+  name: 'mmcore_manager_bot_reply',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      reply: {
+        type: 'string',
+        description: "The reply to send, written entirely in the sender's own language."
+      },
+      detected_language: {
+        type: 'string',
+        description: 'ISO 639-1 code (or best-guess language name) of the language the sender wrote in.'
+      },
+      needs_human: {
+        type: 'boolean',
+        description:
+          'True if this conversation should be handed off to a human -- custom/large scope, price/scope negotiation, signs of frustration, or any commitment beyond pre-approved terms.'
+      },
+      uncertain: {
+        type: 'boolean',
+        description: 'True if the assistant is not confident in the reply, or the question falls outside the given business knowledge.'
+      },
+      create_task: {
+        type: 'boolean',
+        description:
+          'True if this conversation describes concrete work the manager should personally track and follow up on (a project inquiry, a specific complaint, a request needing manual verification, anything already flagged as needing human handoff). False for ordinary questions you can already answer.'
+      },
+      task_title: {
+        type: 'string',
+        description: 'Short (few-word) title summarizing the task. Empty string if create_task is false.'
+      },
+      task_type: {
+        type: 'string',
+        description: 'Short category for the task, e.g. "website", "design", "marketing", "bug", "general". Empty string if create_task is false.'
+      }
+    },
+    required: ['reply', 'detected_language', 'needs_human', 'uncertain', 'create_task', 'task_title', 'task_type'],
+    additionalProperties: false
+  }
+};
+
+interface ManagerParsedReply extends ParsedReply {
+  create_task: boolean;
+  task_title: string;
+  task_type: string;
+}
+
+async function callXai(
   apiKey: string,
   model: string,
-  messages: { role: string; content: string }[]
-): Promise<ParsedReply> {
-  const resp = await fetch(OPENROUTER_URL, {
+  messages: { role: string; content: string }[],
+  schema: typeof REPLY_JSON_SCHEMA | typeof MANAGER_REPLY_JSON_SCHEMA
+): Promise<ParsedReply | ManagerParsedReply> {
+  const resp = await fetch(XAI_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://mmcore.agency',
-      'X-Title': 'M&MCore Front-Desk Bot'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       model,
       messages,
-      response_format: { type: 'json_schema', json_schema: REPLY_JSON_SCHEMA },
+      response_format: { type: 'json_schema', json_schema: schema },
       temperature: 0.4
     })
   });
 
   if (!resp.ok) {
     const text = await resp.text().catch(() => '');
-    throw new Error(`OpenRouter request failed (${resp.status}): ${text.slice(0, 500)}`);
+    throw new Error(`xAI request failed (${resp.status}): ${text.slice(0, 500)}`);
   }
 
   const data = await resp.json();
   const content = data?.choices?.[0]?.message?.content;
-  if (!content) throw new Error('OpenRouter response missing message content');
-  return JSON.parse(content) as ParsedReply;
+  if (!content) throw new Error('xAI response missing message content');
+  return JSON.parse(content);
+}
+
+// Count-then-insert, exactly as specified (no Postgres sequence): count
+// existing rows for this brand, propose brand-1, pad to 4 digits. Two
+// messages arriving close together could compute the same count, so this
+// retries on a unique-violation against public_id's unique constraint
+// (the actual race guard) rather than trusting the count alone.
+async function createManagerTask(
+  supabaseAdmin: SupabaseAdmin,
+  params: { channel: Channel; externalId: string; title: string; taskType: string }
+): Promise<string> {
+  let lastError: unknown = null;
+
+  for (let attempt = 0; attempt < MAX_TASK_ID_ATTEMPTS; attempt++) {
+    const { count, error: countError } = await supabaseAdmin
+      .from('manager_tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('brand', TASK_BRAND);
+
+    if (countError) throw countError;
+
+    const publicId = `${TASK_ID_PREFIX}-${String((count || 0) + 1).padStart(4, '0')}`;
+
+    const { error: insertError } = await supabaseAdmin.from('manager_tasks').insert({
+      public_id: publicId,
+      brand: TASK_BRAND,
+      channel: params.channel,
+      external_id: params.externalId,
+      title: params.title,
+      task_type: params.taskType,
+      status: 'waiting_you'
+    });
+
+    if (!insertError) return publicId;
+
+    // 23505 = unique_violation on public_id -- another message raced on
+    // the same count-based id. Recompute and retry; anything else is a
+    // real error worth surfacing immediately.
+    if (insertError.code !== '23505') throw insertError;
+    lastError = insertError;
+  }
+
+  throw lastError ?? new Error('Could not allocate a unique manager task id after retries');
 }
 
 export async function handleIncomingMessage(params: HandleMessageParams): Promise<HandleMessageResult> {
-  const { supabaseAdmin, channel, externalId, userMessage, openRouterApiKey, model, languageHint } = params;
+  const { supabaseAdmin, channel, externalId, userMessage, xaiApiKey, model, languageHint } = params;
 
   const conversation = await findOrCreateConversation(supabaseAdmin, channel, externalId);
 
@@ -213,9 +339,13 @@ export async function handleIncomingMessage(params: HandleMessageParams): Promis
 
   const history = await getRecentMessages(supabaseAdmin, conversation.id);
 
-  const systemPrompt = languageHint
-    ? `${BUSINESS_KNOWLEDGE_PROMPT}\n\n(Platform hint, not a rule: this visitor's device/client language looks like "${languageHint}". Use it only if their own message gives you no better signal -- their actual words always win.)`
-    : BUSINESS_KNOWLEDGE_PROMPT;
+  let systemPrompt = BUSINESS_KNOWLEDGE_PROMPT;
+  if (languageHint) {
+    systemPrompt += `\n\n(Platform hint, not a rule: this visitor's device/client language looks like "${languageHint}". Use it only if their own message gives you no better signal -- their actual words always win.)`;
+  }
+  if (channel === 'mint') {
+    systemPrompt += `\n\n${MINT_ADDITIVE_PROMPT}`;
+  }
 
   const messages = [
     { role: 'system', content: systemPrompt },
@@ -223,29 +353,58 @@ export async function handleIncomingMessage(params: HandleMessageParams): Promis
     { role: 'user', content: userMessage }
   ];
 
-  let parsed: ParsedReply;
+  const isManagerChannel = channel === 'telegram' || channel === 'mint';
+  const schema = isManagerChannel ? MANAGER_REPLY_JSON_SCHEMA : REPLY_JSON_SCHEMA;
+
+  let reply: string;
+  let detectedLanguage: string;
+  let needsHuman: boolean;
+  let uncertain: boolean;
+
+  let parsed: ParsedReply | ManagerParsedReply;
   try {
-    parsed = await callOpenRouter(openRouterApiKey, model || DEFAULT_MODEL, messages);
+    parsed = await callXai(xaiApiKey, model || DEFAULT_XAI_MODEL, messages, schema);
   } catch (err) {
-    console.error('OpenRouter call failed:', err);
+    console.error('xAI call failed:', err);
     return { reply: GENERIC_ERROR_MESSAGE, needsHuman: false };
   }
 
-  const needsHuman = Boolean(parsed.needs_human);
-  const uncertain = Boolean(parsed.uncertain);
+  detectedLanguage = parsed.detected_language;
+  needsHuman = Boolean(parsed.needs_human);
+  uncertain = Boolean(parsed.uncertain);
+  reply = parsed.reply;
+
+  if (isManagerChannel && (parsed as ManagerParsedReply).create_task) {
+    const managerParsed = parsed as ManagerParsedReply;
+    try {
+      const publicId = await createManagerTask(supabaseAdmin, {
+        channel,
+        externalId,
+        title: managerParsed.task_title || 'Untitled task',
+        taskType: managerParsed.task_type || 'general'
+      });
+      reply = `${reply}\n\nTask ID: ${publicId}`;
+    } catch (err) {
+      // A task-filing failure must not break the reply itself -- the
+      // conversation still gets a normal answer, just without a task
+      // filed. Logged so it's visible in the function's logs rather
+      // than silently lost.
+      console.error('createManagerTask failed:', err);
+    }
+  }
 
   await supabaseAdmin.from('bot_messages').insert([
     {
       conversation_id: conversation.id,
       role: 'user',
       content: userMessage,
-      detected_language: parsed.detected_language || null
+      detected_language: detectedLanguage || null
     },
     {
       conversation_id: conversation.id,
       role: 'assistant',
-      content: parsed.reply,
-      detected_language: parsed.detected_language || null,
+      content: reply,
+      detected_language: detectedLanguage || null,
       uncertain,
       handoff_triggered: needsHuman
     }
@@ -254,10 +413,10 @@ export async function handleIncomingMessage(params: HandleMessageParams): Promis
   await supabaseAdmin
     .from('bot_conversations')
     .update({
-      language: parsed.detected_language || conversation.language,
+      language: detectedLanguage || conversation.language,
       needs_human: conversation.needs_human || needsHuman
     })
     .eq('id', conversation.id);
 
-  return { reply: parsed.reply, needsHuman };
+  return { reply, needsHuman };
 }

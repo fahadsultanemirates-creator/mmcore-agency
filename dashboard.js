@@ -695,6 +695,71 @@ async function initPackagesPanel(profile) {
   }
 }
 
+// -------- Marketing Services packages tab --------
+// Same "Select & Pay" pattern as the M&MCore Starter Package tab (insert
+// into requests, then kick off PayRam) -- just driven by
+// MMCORE_MARKETING_PACKAGES instead of the single starter bundle. The
+// Custom Package never has a price, so it links straight to Telegram
+// support instead of submitting a request.
+function initMarketingPackagesTab(profile) {
+  const root = document.getElementById('marketingPackageRoot');
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  root.innerHTML = MMCORE_MARKETING_PACKAGES.map((pkg, idx) => `
+    <div class="package-card${pkg.featured ? ' featured' : ''}">
+      ${pkg.featured ? '<span class="package-featured-tag">Most popular</span>' : ''}
+      <h3>${pkg.name}</h3>
+      <div class="package-price">${pkg.price !== null ? `${formatMoney(pkg.price)} <span>${pkg.billing}</span>` : `<span>${pkg.billing}</span>`}</div>
+      <p>${pkg.description}</p>
+      <ul class="package-list">
+        ${pkg.includes.map((line) => `<li>${check} ${line}</li>`).join('')}
+      </ul>
+      ${pkg.price !== null
+        ? `<button type="button" class="btn ${pkg.featured ? 'btn-primary' : 'btn-secondary'}" data-pkg-idx="${idx}">Get started — ${formatMoney(pkg.price)}/mo</button>`
+        : `<a href="https://t.me/mmcore_support" class="btn btn-secondary" target="_blank" rel="noopener">Talk to us</a>`}
+      <p class="dash-card-note" id="marketingPkgNote-${idx}"></p>
+    </div>
+  `).join('');
+
+  root.querySelectorAll('button[data-pkg-idx]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const pkg = MMCORE_MARKETING_PACKAGES[Number(btn.dataset.pkgIdx)];
+      const note = document.getElementById(`marketingPkgNote-${btn.dataset.pkgIdx}`);
+      const originalLabel = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+      note.textContent = '';
+
+      const { data: insertedRequest, error } = await supabaseClient
+        .from('requests')
+        .insert({
+          user_id: profile.id,
+          service_category: `Marketing — ${pkg.name}`,
+          tier: 'standard',
+          description: `${pkg.name} (Marketing Services package) — monthly package, priority handling, no additional scoping needed. Includes: ${pkg.includes.join('; ')}.`,
+          agreed_price: pkg.price,
+          status: 'awaiting_payment'
+        })
+        .select('id')
+        .single();
+
+      if (error) {
+        btn.disabled = false;
+        btn.textContent = originalLabel;
+        note.textContent = error.message;
+        return;
+      }
+
+      const paymentResult = await initiatePayramPayment(insertedRequest.id);
+      btn.disabled = false;
+      btn.textContent = 'Submitted — check My Projects';
+      note.textContent = 'Order submitted.';
+      renderPaymentCTA(note, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(pkg.price), payram: paymentResult });
+      renderProjectsPanel(profile.id);
+    });
+  });
+}
+
 // -------- Init --------
 (async () => {
   const session = await requireAuth();
@@ -717,6 +782,7 @@ async function initPackagesPanel(profile) {
   initTabs();
   initNewRequestWizard(profile);
   initPackagesPanel(profile);
+  initMarketingPackagesTab(profile);
   renderProjectsPanel(userId);
   renderBillingPanel(userId);
 

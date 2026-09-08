@@ -6,6 +6,7 @@
 <title>Dashboard — M&amp;MCore Agency</title>
 <link rel="stylesheet" href="main.css">
 <link rel="stylesheet" href="dashboard.css">
+<link rel="stylesheet" href="inner.css">
 </head>
 <body>
 
@@ -82,6 +83,7 @@
       <button type="button" class="dash-tab active" data-tab="projects">My Projects</button>
       <button type="button" class="dash-tab" data-tab="new-request">New Request</button>
       <button type="button" class="dash-tab" data-tab="packages">Starter Package</button>
+      <button type="button" class="dash-tab" data-tab="marketing">Marketing</button>
       <button type="button" class="dash-tab" data-tab="billing">Billing</button>
     </div>
 
@@ -230,6 +232,12 @@
         <p class="dash-empty" id="addonLockedNote">Submit a package order above to unlock 50% off additional services.</p>
       </div>
 
+      <div class="dash-panel" id="panel-marketing">
+        <h2>Marketing Services</h2>
+        <div class="dash-note">The full AgenticCore Biz marketing lineup, at 40% below Biz's price. Pick a service from New Request → Marketing, or select a bundled package below. <a href="marketing-services.html" target="_blank" rel="noopener">See full pricing &amp; details →</a></div>
+        <div class="package-grid" id="marketingPackageRoot" style="margin-top:var(--space-lg);"></div>
+      </div>
+
       <div class="dash-panel" id="panel-billing">
         <h2>Billing history</h2>
         <div class="dash-note">Billing follows 30% upfront, 70% on completion, across every service and the package. <a href="terms.html">Read the full payment &amp; delivery policy →</a></div>
@@ -245,6 +253,7 @@
 <script src="supabase-client.js"></script>
 <script src="auth.js"></script>
 <script src="pricing-catalog.js"></script>
+<script src="marketing-pricing-catalog.js"></script>
 <script src="dashboard.js"></script>
 </body>
 </html>

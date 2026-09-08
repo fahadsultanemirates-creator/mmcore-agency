@@ -296,3 +296,174 @@
   color: var(--text-secondary);
   margin: var(--space-md) 0;
 }
+
+/* ============================================
+   À la carte pricing catalog (Marketing Services)
+   ============================================ */
+
+.catalog-category {
+  margin-bottom: var(--space-xl);
+}
+
+.catalog-category h3 {
+  font-size: 1.1rem;
+  color: var(--accent-magenta);
+  margin-bottom: var(--space-sm);
+}
+
+.catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.catalog-table tr {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.catalog-table tr:last-child {
+  border-bottom: none;
+}
+
+.catalog-table td {
+  padding: var(--space-sm) var(--space-md);
+  vertical-align: top;
+}
+
+.catalog-name {
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.catalog-price {
+  color: var(--accent-magenta);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .catalog-table, .catalog-table tbody, .catalog-table tr, .catalog-table td {
+    display: block;
+    width: 100%;
+  }
+  .catalog-table tr {
+    padding: var(--space-sm) var(--space-md);
+  }
+  .catalog-table td {
+    padding: 0.2rem 0;
+  }
+  .catalog-price {
+    text-align: left;
+  }
+}
+
+/* ============================================
+   Packages (Marketing Services)
+   ============================================ */
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  align-items: stretch;
+}
+
+.package-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+.package-card.featured {
+  border-color: rgba(229, 22, 154, 0.4);
+  background: linear-gradient(160deg, var(--bg-panel), rgba(229, 22, 154, 0.04));
+  position: relative;
+}
+
+.package-featured-tag {
+  position: absolute;
+  top: -12px;
+  left: var(--space-lg);
+  background: var(--accent-magenta);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+}
+
+.package-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-xs);
+}
+
+.package-price {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--accent-magenta);
+  margin-bottom: var(--space-xs);
+}
+
+.package-price span {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.package-card > p {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-bottom: var(--space-md);
+}
+
+.package-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: var(--space-md);
+  flex: 1;
+}
+
+.package-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.package-list li svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--accent-magenta);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.package-card .btn {
+  width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .package-grid {
+    grid-template-columns: 1fr;
+  }
+  .package-card.featured {
+    order: -1;
+  }
+}

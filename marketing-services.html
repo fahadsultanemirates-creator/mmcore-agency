@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketing Services &amp; Pricing — M&amp;MCore Agency</title>
+<meta name="description" content="M&amp;MCore's full AI marketing lineup -- AI video &amp; creative, lead generation, customer engagement, paid media, and organic growth -- at 40% below AgenticCore Biz pricing.">
+<link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="inner.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="images/logo.png" alt="M&amp;MCore">
+      M&amp;MCore
+    </a>
+    <div class="nav-links">
+      <a href="services.html">Services</a>
+      <a href="marketing-services.html">Marketing</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="business-pool.html">Business Pool</a>
+      <a href="referral.html">Referrals</a>
+    </div>
+    <div class="nav-cta">
+      <a href="index.html" class="btn btn-primary btn-sm">Home</a>
+      <a href="login.html" class="btn btn-secondary btn-sm">Log in</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Get started</a>
+    </div>
+  </div>
+</nav>
+
+<header class="inner-hero">
+  <div class="container">
+    <span class="hero-eyebrow"><span class="dot"></span> Marketing services &amp; pricing</span>
+    <h1>Full AI marketing services, at M&amp;MCore prices</h1>
+    <p class="hero-sub">The same AI marketing lineup AgenticCore Biz runs -- built and run by agents, planned before anything is posted -- now inside M&amp;MCore, at 40% less than Biz's price on every service and package. À la carte below, or one of three packages further down.</p>
+  </div>
+</header>
+
+<section class="deep-section">
+  <div class="container narrow">
+    <div class="deep-block">
+      <span class="deep-index">Why this exists</span>
+      <h2>M&amp;MCore doesn't run a separate marketing agency -- so we brought one in</h2>
+      <p>AgenticCore Biz is the AgenticCore ecosystem's dedicated marketing agency. M&amp;MCore is the value-priced entry point of that same ecosystem, so rather than leave marketing out, every Biz service is offered here too -- run by the same AI agents, at 40% less than Biz charges, alongside the websites, design, and bookkeeping services M&amp;MCore already handles.</p>
+    </div>
+    <div class="deep-block">
+      <h2>Still a real conversation first</h2>
+      <p>Prices below are starting ranges converted to M&amp;MCore's one-tier pricing, not blind checkout numbers -- a real person confirms scope with you before any agent starts, exactly like every other M&amp;MCore service.</p>
+    </div>
+  </div>
+</section>
+
+<section id="catalog">
+  <div class="container narrow">
+    <div class="section-head">
+      <span class="section-eyebrow">À la carte</span>
+      <h2>Pick individual services</h2>
+      <p>One standard price per service -- no low/mid/high tier to compare.</p>
+    </div>
+    <div id="marketingCatalogRoot"></div>
+  </div>
+</section>
+
+<section id="packages">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Or go all-in</span>
+      <h2>Three packages</h2>
+      <p>Two fixed monthly packages, and a third built entirely around what you actually need.</p>
+    </div>
+    <div class="package-grid" id="marketingPackageRoot"></div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="container">
+    <h2>Not sure what fits?</h2>
+    <p>Sign up and tell us about your business -- costs nothing, and takes a few minutes.</p>
+    <a href="signup.html" class="btn btn-primary">Start the conversation</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+          M&amp;MCore
+        </a>
+        <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="services.html">Websites</a></li>
+          <li><a href="marketing-services.html">Marketing</a></li>
+          <li><a href="services.html">Bookkeeping</a></li>
+          <li><a href="services.html">Audits &amp; Reports</a></li>
+          <li><a href="services.html">Custom AI Agents</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="business-pool.html">Business Pool</a></li>
+          <li><a href="referral.html">Referral Program</a></li>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="tiers.html">Our Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Referral Points Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 M&amp;MCore. All rights reserved.</span>
+      <span>Part of the AgenticCore ecosystem</span>
+    </div>
+  </div>
+</footer>
+
+<script src="pricing-catalog.js"></script>
+<script src="marketing-pricing-catalog.js"></script>
+<script src="supabase-client.js"></script>
+<script>
+(function renderMarketingCatalog() {
+  const root = document.getElementById('marketingCatalogRoot');
+  root.innerHTML = MMCORE_MARKETING_CATALOG.map((cat) => `
+    <div class="catalog-category">
+      <h3>${cat.category}</h3>
+      <table class="catalog-table">
+        <tbody>
+          ${cat.items.map((item) => `
+            <tr>
+              <td><span class="catalog-name">${item.name}</span></td>
+              <td class="catalog-price">${formatMarketingPrice(item.price)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `).join('');
+})();
+
+(function renderMarketingPackages() {
+  const root = document.getElementById('marketingPackageRoot');
+  const check = '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  root.innerHTML = MMCORE_MARKETING_PACKAGES.map((pkg) => `
+    <div class="package-card${pkg.featured ? ' featured' : ''}">
+      ${pkg.featured ? '<span class="package-featured-tag">Most popular</span>' : ''}
+      <h3>${pkg.name}</h3>
+      <div class="package-price">${pkg.price !== null ? `${formatMarketingPrice(pkg.price)} <span>${pkg.billing}</span>` : `<span>${pkg.billing}</span>`}</div>
+      <p>${pkg.description}</p>
+      <ul class="package-list">
+        ${pkg.includes.map((line) => `<li>${check} ${line}</li>`).join('')}
+      </ul>
+      <a href="${pkg.price !== null ? 'signup.html' : 'https://t.me/mmcore_support'}" class="btn ${pkg.featured ? 'btn-primary' : 'btn-secondary'}"${pkg.price === null ? ' target="_blank" rel="noopener"' : ''}>${pkg.price !== null ? 'Get started' : 'Talk to us'}</a>
+    </div>
+  `).join('');
+})();
+</script>
+<script src="main.js"></script>
+</body>
+</html>

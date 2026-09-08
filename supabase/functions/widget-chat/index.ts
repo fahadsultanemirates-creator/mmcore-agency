@@ -14,8 +14,8 @@ import { handleIncomingMessage, getConversationHistory } from '../_shared/bot-co
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const OPENROUTER_API_KEY = Deno.env.get('OPENROUTER_API_KEY')!;
-const OPENROUTER_MODEL = Deno.env.get('OPENROUTER_MODEL') || undefined;
+const XAI_API_KEY = Deno.env.get('XAI_API_KEY')!;
+const XAI_MODEL = Deno.env.get('XAI_MODEL') || undefined;
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -81,8 +81,8 @@ export async function handleRequest(req: Request): Promise<Response> {
       channel: 'widget',
       externalId: visitorId,
       userMessage: message,
-      openRouterApiKey: OPENROUTER_API_KEY,
-      model: OPENROUTER_MODEL,
+      xaiApiKey: XAI_API_KEY,
+      model: XAI_MODEL,
       languageHint: typeof languageHint === 'string' ? languageHint : undefined
     });
 

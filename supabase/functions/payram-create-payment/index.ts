@@ -1,8 +1,15 @@
 // M&MCore Agency — creates a PayRam payment link for 30% of a
-// request's agreed price. Authenticated (same pattern as forge-chat):
+// request's agreed price. Authenticated (same pattern as mint-chat):
 // resolves the caller's real identity from their own session token,
 // never trusts a client-supplied user id, and verifies the request
 // actually belongs to them before doing anything.
+//
+// PAYRAM_API_KEY / PAYRAM_BASE_URL are deliberately the SAME PayRam
+// project credentials as AgenticCore Agency, not a separate M&MCore
+// deployment -- one shared wallet, same pattern AgenticCore Biz already
+// uses. Every invoiceID this function sends is prefixed "mmcore-" (see
+// below) so that shared PayRam project/webhook can tell M&MCore's
+// payments apart from .agency's and .biz's.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -10,7 +17,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const PAYRAM_API_KEY = Deno.env.get('PAYRAM_API_KEY')!;
-const PAYRAM_BASE_URL = Deno.env.get('PAYRAM_BASE_URL')!; // e.g. https://pay.mmcore.agency
+const PAYRAM_BASE_URL = Deno.env.get('PAYRAM_BASE_URL')!; // e.g. https://pay.agenticcore.agency (shared instance)
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -129,7 +136,10 @@ export async function handleRequest(req: Request): Promise<Response> {
         customerEmail: caller.email,
         customerID: caller.id,
         amountInUSD: amountDue,
-        invoiceID: requestId
+        // "mmcore-" prefix -- see the file header comment. This is the
+        // only thing distinguishing an M&MCore payment from .agency's
+        // or .biz's on the shared PayRam project.
+        invoiceID: `mmcore-${requestId}`
       })
     });
   } catch (err) {
