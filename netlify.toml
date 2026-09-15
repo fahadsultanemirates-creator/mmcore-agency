@@ -1,0 +1,46 @@
+# M&MCore Agency — Netlify build/deploy config. The site is plain static
+# files, so there is no build step; this exists for the 404 fallback and
+# to keep _headers-adjacent behaviour explicit in one place.
+
+[build]
+  publish = "."
+  command = ""
+
+# Pretty URLs: /services resolves to /services.html, so a link that drops
+# the extension doesn't 404.
+[[redirects]]
+  from = "/services"
+  to = "/services.html"
+  status = 200
+
+[[redirects]]
+  from = "/pricing"
+  to = "/tiers.html"
+  status = 200
+
+[[redirects]]
+  from = "/marketing"
+  to = "/marketing-services.html"
+  status = 200
+
+[[redirects]]
+  from = "/packages"
+  to = "/packages.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200
+
+# Anything else that doesn't resolve gets the real 404 page with a 404
+# status (not a soft-200, which search engines treat as a duplicate).
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

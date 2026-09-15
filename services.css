@@ -67,8 +67,12 @@
   font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--text-primary);
-  white-space: nowrap;
   text-align: right;
+  /* Keeps "3-7 days" on one line without letting a longer value like
+     "1-2 weeks to launch, then ongoing" push the grid past the
+     viewport. */
+  text-wrap: balance;
+  min-width: 0;
 }
 
 .service-note {
@@ -84,12 +88,31 @@
 
 @media (max-width: 700px) {
   .timeline-row {
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+  .timeline-info {
+    min-width: 0;
   }
   .timeline-days {
     grid-column: 1 / -1;
     text-align: left;
-    padding-left: 76px;
-    margin-top: -0.4rem;
+    padding-left: 72px;
+    margin-top: -0.2rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .timeline-row {
+    grid-template-columns: 1fr;
+  }
+  .timeline-tier {
+    justify-self: start;
+    padding: 0.25rem 0.7rem;
+  }
+  .timeline-days {
+    padding-left: 0;
+    margin-top: 0.2rem;
   }
 }

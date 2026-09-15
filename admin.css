@@ -77,3 +77,66 @@
   color: var(--text-tertiary);
   font-style: italic;
 }
+
+.admin-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(229, 22, 154, 0.12);
+  color: var(--accent-magenta);
+  vertical-align: middle;
+}
+
+.admin-table small {
+  color: var(--text-tertiary);
+  font-size: 0.72rem;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.admin-detail {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.5rem var(--space-sm);
+  font-size: 0.9rem;
+}
+
+.admin-detail dt {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-detail dd {
+  margin: 0;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.admin-detail dd code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.admin-brief {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 700px) {
+  .admin-detail {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+  .admin-detail dt {
+    margin-top: var(--space-xs);
+  }
+}

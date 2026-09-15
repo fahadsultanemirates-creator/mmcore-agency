@@ -176,16 +176,104 @@ img, svg {
   gap: var(--space-sm);
 }
 
+/* Mobile menu. The toggle button and the drawer below are injected by
+   main.js from the existing .nav-links / .nav-cta contents, so every
+   page gets the same mobile nav without duplicating markup 11 times.
+   Previously .nav-links was simply display:none below 860px with a
+   .nav-menu-toggle rule that no page ever rendered -- which meant the
+   entire primary navigation silently disappeared on every phone. */
+
 .nav-menu-toggle {
   display: none;
+  background: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 0.45rem;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.nav-menu-toggle svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.nav-menu-toggle .icon-close,
+.nav-menu-toggle.is-open .icon-open {
+  display: none;
+}
+
+.nav-menu-toggle.is-open .icon-close {
+  display: block;
+}
+
+.nav-mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.97);
+  max-height: calc(100vh - 68px);
+  overflow-y: auto;
+}
+
+.nav-mobile-menu[hidden] {
+  display: none;
+}
+
+.nav-mobile-menu a.nav-mobile-link {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(42, 42, 46, 0.5);
+}
+
+.nav-mobile-menu a.nav-mobile-link:last-of-type {
+  border-bottom: none;
+}
+
+.nav-mobile-menu a.nav-mobile-link:hover {
+  color: var(--text-primary);
+}
+
+.nav-mobile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Six nav items, a logo and two CTAs is tight just above the mobile
+   breakpoint -- close the gaps up rather than letting them collide. */
+@media (max-width: 1080px) and (min-width: 861px) {
+  .nav-links {
+    gap: var(--space-sm);
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 860px) {
   .nav-links {
     display: none;
   }
+  .nav-cta {
+    display: none;
+  }
   .nav-menu-toggle {
     display: block;
+  }
+  .nav-mobile-menu {
+    display: flex;
+  }
+  .nav-mobile-menu[hidden] {
+    display: none;
   }
 }
 
@@ -823,4 +911,16 @@ section {
   .footer-top {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* A single long unbreakable value (a crypto address, a monospace
+   turnaround string) used to push whole pages wider than the viewport.
+   These stop that class of bug at the source rather than one element at
+   a time. */
+.container {
+  min-width: 0;
+}
+
+code {
+  overflow-wrap: anywhere;
 }

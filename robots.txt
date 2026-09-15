@@ -1,0 +1,15 @@
+# M&MCore Agency
+User-agent: *
+Allow: /
+
+# Signed-in and transactional surfaces -- nothing here is useful in a
+# search result, and dashboard/admin are behind auth anyway.
+Disallow: /dashboard.html
+Disallow: /admin.html
+Disallow: /login.html
+Disallow: /signup.html
+Disallow: /reset-request.html
+Disallow: /reset-password.html
+Disallow: /check-email.html
+
+Sitemap: https://mmcore.agency/sitemap.xml

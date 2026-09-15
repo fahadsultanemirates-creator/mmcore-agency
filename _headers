@@ -1,3 +1,26 @@
+# Security headers for every response. The site is static and loads a
+# small, fixed set of third-party origins:
+#   - cdn.jsdelivr.net      supabase-js UMD bundle
+#   - fonts.googleapis.com  the stylesheet
+#   - fonts.gstatic.com     the font files themselves
+#   - *.supabase.co         REST, auth and Edge Function calls
+# The CSP below allows exactly those and nothing else, so an injected
+# <script src> pointing anywhere else simply won't execute.
+#
+# 'unsafe-inline' is present for script-src because several pages still
+# carry inline <script> blocks (marketing-services.html renders its
+# catalogue that way) and every page uses inline style attributes.
+# Removing it means moving those to files and adding per-request nonces,
+# which a static host can't do -- worth revisiting if the site ever
+# gains a build step.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
 # HTML: always revalidate with the server, never serve a stale copy from the
 # browser cache. This is already Netlify's effective default when no custom
 # headers exist, but pinning it explicitly here means it stays correct even

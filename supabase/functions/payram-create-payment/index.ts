@@ -1,3 +1,10 @@
+// STATUS: NOT CURRENTLY CALLED BY THE SITE.
+// The dashboard checkout was switched to USDT (BEP20) only -- see
+// renderPaymentCTA in dashboard.js. This function and payram-webhook are
+// left deployed and intact so the card/other-crypto path can be switched
+// back on by restoring the initiatePayramPayment() call; nothing in the
+// frontend reaches either of them today.
+//
 // M&MCore Agency — creates a PayRam payment link for 30% of a
 // request's agreed price. Authenticated (same pattern as mint-chat):
 // resolves the caller's real identity from their own session token,

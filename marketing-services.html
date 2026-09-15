@@ -5,7 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marketing Services &amp; Pricing — M&amp;MCore Agency</title>
 <meta name="description" content="M&amp;MCore's full AI marketing lineup -- AI video &amp; creative, lead generation, customer engagement, paid media, and organic growth -- at one standard price per service.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://mmcore.agency/marketing-services.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="M&amp;MCore Agency">
+<meta property="og:url" content="https://mmcore.agency/marketing-services.html">
+<meta property="og:title" content="Marketing Services &amp; Pricing — M&amp;MCore Agency">
+<meta property="og:description" content="M&amp;MCore's full AI marketing lineup -- AI video &amp; creative, lead generation, customer engagement, paid media, and organic growth -- at one standard price per service.">
+<meta property="og:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marketing Services &amp; Pricing — M&amp;MCore Agency">
+<meta name="twitter:description" content="M&amp;MCore's full AI marketing lineup -- AI video &amp; creative, lead generation, customer engagement, paid media, and organic growth -- at one standard price per service.">
+<meta name="twitter:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="chat-widget.css">
 <link rel="stylesheet" href="inner.css">
 </head>
 <body>
@@ -13,12 +31,13 @@
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="images/logo.png" alt="M&amp;MCore">
+      <img src="images/logo-64.png" alt="M&amp;MCore" width="28" height="28">
       M&amp;MCore
     </a>
     <div class="nav-links">
       <a href="services.html">Services</a>
       <a href="marketing-services.html">Marketing</a>
+      <a href="packages.html">Packages</a>
       <a href="how-it-works.html">How it works</a>
       <a href="business-pool.html">Business Pool</a>
       <a href="referral.html">Referrals</a>
@@ -48,7 +67,8 @@
     </div>
     <div class="deep-block">
       <h2>Still a real conversation first</h2>
-      <p>Prices below are starting ranges converted to M&amp;MCore's one-tier pricing, not blind checkout numbers -- a real person confirms scope with you before any agent starts, exactly like every other M&amp;MCore service.</p>
+      <p>Prices below are M&amp;MCore's one-tier pricing, not blind checkout numbers &mdash; a real person confirms scope with you before any agent starts, exactly like every other M&amp;MCore service.</p>
+      <p>These sit well above the light-touch <a href="services.html">Marketing Essentials</a> on our core price list, and deliberately so: those are one-off assets or a simple posting cadence, while everything here is a continuously-run managed programme with real third-party media, data and compute behind it. On Paid Media items the price is our management fee &mdash; your ad spend goes straight to the platforms and is not included.</p>
     </div>
   </div>
 </section>
@@ -58,7 +78,7 @@
     <div class="section-head">
       <span class="section-eyebrow">À la carte</span>
       <h2>Pick individual services</h2>
-      <p>One standard price per service -- no low/mid/high tier to compare.</p>
+      <p>One standard price per service &mdash; no low/mid/high tier to compare. Anything marked monthly is billed for each month in advance and can be cancelled before the next one starts.</p>
     </div>
     <div id="marketingCatalogRoot"></div>
   </div>
@@ -69,7 +89,7 @@
     <div class="section-head">
       <span class="section-eyebrow">Or go all-in</span>
       <h2>Three packages</h2>
-      <p>Two fixed monthly packages, and a third built entirely around what you actually need.</p>
+      <p>Two fixed monthly packages, and a third built entirely around what you actually need. Monthly packages are billed in full each month, in advance &mdash; not on the 30%/70% split we use for one-off project work, because there is no single completion to hold a balance against.</p>
     </div>
     <div class="package-grid" id="marketingPackageRoot"></div>
   </div>
@@ -88,7 +108,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="nav-logo">
-          <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+          <img src="images/logo-64.png" alt="M&amp;MCore" width="24" height="24">
           M&amp;MCore
         </a>
         <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
@@ -101,6 +121,7 @@
           <li><a href="services.html">Bookkeeping</a></li>
           <li><a href="services.html">Audits &amp; Reports</a></li>
           <li><a href="services.html">Custom AI Agents</a></li>
+          <li><a href="packages.html">Starter Package</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -116,13 +137,14 @@
         <h5>Legal</h5>
         <ul>
           <li><a href="terms.html">Terms of Service</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Referral Points Policy</a></li>
+          <li><a href="terms.html#payment">Payment &amp; Delivery</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="points-policy.html">Referral Points Policy</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 M&amp;MCore. All rights reserved.</span>
+      <span>&copy; <span class="footer-year">2026</span> M&amp;MCore. All rights reserved.</span>
       <span>Part of the AgenticCore ecosystem</span>
     </div>
   </div>
@@ -132,16 +154,23 @@
 <script src="marketing-pricing-catalog.js"></script>
 <script src="supabase-client.js"></script>
 <script>
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
 (function renderMarketingCatalog() {
   const root = document.getElementById('marketingCatalogRoot');
   root.innerHTML = MMCORE_MARKETING_CATALOG.map((cat) => `
     <div class="catalog-category">
-      <h3>${cat.category}</h3>
+      <h3>${esc(cat.category)}</h3>
+      ${cat.note ? `<p class="catalog-note">${esc(cat.note)}</p>` : ''}
       <table class="catalog-table">
         <tbody>
           ${cat.items.map((item) => `
             <tr>
-              <td><span class="catalog-name">${item.name}</span></td>
+              <td><span class="catalog-name">${esc(item.name)}</span></td>
               <td class="catalog-price">${formatMarketingPrice(item.price)}</td>
             </tr>
           `).join('')}
@@ -157,17 +186,19 @@
   root.innerHTML = MMCORE_MARKETING_PACKAGES.map((pkg) => `
     <div class="package-card${pkg.featured ? ' featured' : ''}">
       ${pkg.featured ? '<span class="package-featured-tag">Most popular</span>' : ''}
-      <h3>${pkg.name}</h3>
-      <div class="package-price">${pkg.price !== null ? `${formatMarketingPrice(pkg.price)} <span>${pkg.billing}</span>` : `<span>${pkg.billing}</span>`}</div>
-      <p>${pkg.description}</p>
+      <h3>${esc(pkg.name)}</h3>
+      <div class="package-price">${pkg.price !== null ? `${formatMarketingPrice(pkg.price)} <span>${esc(pkg.billing)}</span>` : `<span>${esc(pkg.billing)}</span>`}</div>
+      <p>${esc(pkg.description)}</p>
       <ul class="package-list">
-        ${pkg.includes.map((line) => `<li>${check} ${line}</li>`).join('')}
+        ${pkg.includes.map((line) => `<li>${check} ${esc(line)}</li>`).join('')}
       </ul>
+      ${pkg.price !== null ? `<p class="catalog-note">${esc(MARKETING_PACKAGE_BILLING_NOTE)}</p>` : ''}
       <a href="${pkg.price !== null ? 'signup.html' : 'https://t.me/mmcore_support'}" class="btn ${pkg.featured ? 'btn-primary' : 'btn-secondary'}"${pkg.price === null ? ' target="_blank" rel="noopener"' : ''}>${pkg.price !== null ? 'Get started' : 'Talk to us'}</a>
     </div>
   `).join('');
 })();
 </script>
 <script src="main.js"></script>
+<script src="chat-widget.js"></script>
 </body>
 </html>

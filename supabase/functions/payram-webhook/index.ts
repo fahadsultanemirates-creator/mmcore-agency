@@ -1,3 +1,10 @@
+// STATUS: NOT CURRENTLY CALLED BY THE SITE.
+// The dashboard checkout was switched to USDT (BEP20) only -- see
+// renderPaymentCTA in dashboard.js. This function and payram-webhook are
+// left deployed and intact so the card/other-crypto path can be switched
+// back on by restoring the initiatePayramPayment() call; nothing in the
+// frontend reaches either of them today.
+//
 // M&MCore Agency — receives PayRam's payment-confirmed webhook.
 // Adapted from AgenticCore Agency's proven payram-webhook function (same
 // signature scheme, same idempotency ordering) -- only env var names

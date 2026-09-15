@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create your account — M&amp;MCore Agency</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="main.css">
 <link rel="stylesheet" href="auth.css">
 </head>
@@ -12,7 +17,7 @@
 <div class="auth-wrap">
   <div class="auth-card">
     <a href="index.html" class="auth-logo" aria-label="Home">
-      <img src="images/logo.png" alt="M&amp;MCore">
+      <img src="images/logo-64.png" alt="M&amp;MCore" width="28" height="28">
     </a>
     <h1>Create your account</h1>
     <p class="auth-sub">Start a project in minutes — no credit card required to sign up.</p>
@@ -37,10 +42,27 @@
             <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.42 18.42 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 7 11 7a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
           </button>
         </div>
+        <p class="field-hint">At least 8 characters.</p>
+      </div>
+      <div class="field-group">
+        <label for="passwordConfirm">Confirm password</label>
+        <div class="password-field">
+          <input type="password" id="passwordConfirm" required autocomplete="new-password" minlength="8">
+          <button type="button" class="password-toggle" data-target="passwordConfirm" aria-label="Show password">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a18.42 18.42 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 7 11 7a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+          </button>
+        </div>
       </div>
       <div class="field-group">
         <label for="referralCode">Referral code <span style="color:var(--text-tertiary);font-weight:400;">(optional)</span></label>
         <input type="text" id="referralCode" autocomplete="off" placeholder="e.g. AB12CD34">
+      </div>
+      <div class="field-group consent-row">
+        <label class="consent-label">
+          <input type="checkbox" id="acceptTerms" required>
+          <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+        </label>
       </div>
       <button type="submit" class="btn btn-primary" id="signupBtn">Create account</button>
     </form>

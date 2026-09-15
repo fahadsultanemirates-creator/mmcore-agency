@@ -467,3 +467,35 @@
     order: -1;
   }
 }
+
+/* ============================================
+   Policy pages (privacy.html, points-policy.html, terms.html)
+   ============================================ */
+
+.policy-updated {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  margin-bottom: var(--space-lg);
+}
+
+.deep-block ul.deep-list li strong {
+  color: var(--text-primary);
+}
+
+.package-compare {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: -0.4rem 0 var(--space-sm);
+}
+
+.package-compare s {
+  color: var(--text-tertiary);
+}
+
+.catalog-note {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin: -0.3rem 0 var(--space-sm);
+}

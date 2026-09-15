@@ -1,13 +1,33 @@
-// M&MCore Agency — homepage chat widget. The visual widget (floating
-// button + panel) is in place now, but the AI assistant itself is
-// deferred until the rest of the site is finished -- there's no
-// widget-chat Edge Function behind this yet. It's a self-contained
-// placeholder: no network calls, just a static greeting and an instant
-// canned reply, plus a real link to Telegram for anyone who wants a
-// human now. Swap this file out once the assistant is actually built.
+// M&MCore Agency — homepage chat widget.
+//
+// This was a self-contained placeholder that never made a network call,
+// even though its backend (supabase/functions/widget-chat, sharing the
+// same handleIncomingMessage brain as the Telegram bot) was already
+// built and deployed. It now talks to that function for real, and falls
+// back to the Telegram handoff only when the call actually fails.
+
 const MANAGER_TELEGRAM_URL = 'https://t.me/mmcore_managers';
-const PLACEHOLDER_GREETING = "Hi! I'm the M&MCore assistant — I'm still being set up. For anything urgent right now, message us on Telegram and a real person will get back to you.";
-const PLACEHOLDER_REPLY = "Thanks for the message! I can't answer yet -- my setup isn't finished. Message us on Telegram below and a real person will help in the meantime.";
+const GREETING = "Hi! I'm the M&MCore assistant. Ask me about any service, what it costs, or how long it takes — I can answer most things myself.";
+const VISITOR_ID_KEY = 'mmcore_visitor_id';
+
+// A stable per-browser id so the conversation survives a reload. It is
+// only an identifier for an anonymous thread -- it carries no
+// authority, and widget-chat treats it as untrusted (it rate-limits on
+// the caller's IP as well, precisely because this is resettable).
+function getVisitorId() {
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2));
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch (e) {
+    // Private mode / storage blocked: fall back to a per-page id. The
+    // visitor loses history across reloads but the widget still works.
+    return 'ephemeral-' + Math.random().toString(36).slice(2);
+  }
+}
 
 function buildWidgetMarkup() {
   const wrap = document.createElement('div');
@@ -43,6 +63,11 @@ function appendMessage(container, role, text) {
 }
 
 function appendHandoffLink(container) {
+  // Don't stack a second handoff link directly under an existing one.
+  if (container.lastElementChild &&
+      container.lastElementChild.classList.contains('chat-widget-handoff-link')) {
+    return;
+  }
   const el = document.createElement('a');
   el.href = MANAGER_TELEGRAM_URL;
   el.target = '_blank';
@@ -77,20 +102,51 @@ function removeTypingIndicator() {
   const form = document.getElementById('chatWidgetForm');
   const input = document.getElementById('chatWidgetInput');
 
+  const visitorId = getVisitorId();
   let greeted = false;
   let sending = false;
 
-  function openPanel() {
+  async function callWidgetChat(payload) {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/widget-chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Anonymous endpoint: the publishable key is what Supabase's
+        // platform JWT gate expects, and is already public in
+        // supabase-client.js.
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+      },
+      body: JSON.stringify({ visitorId, ...payload })
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok) {
+      const err = new Error(data?.error || `Request failed (${resp.status})`);
+      err.status = resp.status;
+      throw err;
+    }
+    return data;
+  }
+
+  async function openPanel() {
     panel.hidden = false;
     toggleBtn.classList.add('is-open');
     toggleBtn.setAttribute('aria-expanded', 'true');
-
-    if (!greeted) {
-      greeted = true;
-      appendMessage(messagesEl, 'assistant', PLACEHOLDER_GREETING);
-      appendHandoffLink(messagesEl);
-    }
     input.focus();
+
+    if (greeted) return;
+    greeted = true;
+
+    try {
+      const data = await callWidgetChat({ action: 'history' });
+      if (data.messages && data.messages.length) {
+        data.messages.forEach((m) => appendMessage(messagesEl, m.role, m.content));
+      } else {
+        appendMessage(messagesEl, 'assistant', GREETING);
+      }
+    } catch (e) {
+      appendMessage(messagesEl, 'assistant', GREETING);
+    }
   }
 
   function closePanel() {
@@ -108,7 +164,7 @@ function removeTypingIndicator() {
     if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || sending) return;
@@ -119,15 +175,25 @@ function removeTypingIndicator() {
     input.disabled = true;
     appendTypingIndicator(messagesEl);
 
-    // No backend yet -- a short delay just keeps the "thinking" indicator
-    // from flashing instantly, so it still feels like a real reply.
-    setTimeout(() => {
+    try {
+      const data = await callWidgetChat({
+        action: 'message',
+        message: text,
+        languageHint: navigator.language || undefined
+      });
       removeTypingIndicator();
-      appendMessage(messagesEl, 'assistant', PLACEHOLDER_REPLY);
-      appendHandoffLink(messagesEl);
+      appendMessage(messagesEl, 'assistant', data.reply);
+      if (data.needsHuman) appendHandoffLink(messagesEl);
+    } catch (err) {
+      removeTypingIndicator();
+      appendMessage(messagesEl, 'assistant', err.status === 429
+        ? err.message
+        : "Sorry — I couldn't reach my brain just then. Try again in a moment, or talk to a person on Telegram below.");
+      if (err.status !== 429) appendHandoffLink(messagesEl);
+    } finally {
       sending = false;
       input.disabled = false;
       input.focus();
-    }, 500);
+    }
   });
 })();

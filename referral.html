@@ -5,7 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Referral Program — M&amp;MCore Agency</title>
 <meta name="description" content="Earn M&amp;MCore Points by referring clients — three levels deep. Here's exactly how it works.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://mmcore.agency/referral.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="M&amp;MCore Agency">
+<meta property="og:url" content="https://mmcore.agency/referral.html">
+<meta property="og:title" content="Referral Program — M&amp;MCore Agency">
+<meta property="og:description" content="Earn M&amp;MCore Points by referring clients — three levels deep. Here's exactly how it works.">
+<meta property="og:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Referral Program — M&amp;MCore Agency">
+<meta name="twitter:description" content="Earn M&amp;MCore Points by referring clients — three levels deep. Here's exactly how it works.">
+<meta name="twitter:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="chat-widget.css">
 <link rel="stylesheet" href="inner.css">
 </head>
 <body>
@@ -13,11 +31,13 @@
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+      <img src="images/logo-64.png" alt="M&amp;MCore" width="24" height="24">
       M&amp;MCore
     </a>
     <div class="nav-links">
       <a href="services.html">Services</a>
+      <a href="marketing-services.html">Marketing</a>
+      <a href="packages.html">Packages</a>
       <a href="how-it-works.html">How it works</a>
       <a href="business-pool.html">Business Pool</a>
       <a href="referral.html">Referrals</a>
@@ -42,7 +62,7 @@
   <div class="container narrow">
     <div class="deep-block">
       <h2>What are M&amp;MCore Points?</h2>
-      <p>1 Point equals $1 of credit toward any M&amp;MCore service. Points aren't cash and can't be cashed out — they're a discount on future work, usable by you or on someone else's order. They never expire.</p>
+      <p>1 Point equals $1 of credit toward any M&amp;MCore service. Tick "Apply my M&amp;MCore Points" when you submit a request and your balance comes straight off the price — Points can cover up to 100% of an order. They aren't cash, can't be cashed out, and never expire while your account is open.</p>
       <div class="note-box">This is a rewards program, not an investment vehicle. Points are only earned once real, paid work is completed — never just for signing up or referring someone who hasn't ordered anything yet.</div>
     </div>
 
@@ -53,21 +73,21 @@
           <div class="level-badge">L1</div>
           <div class="level-info">
             <h4>Someone you referred directly</h4>
-            <p>You earn 20% of their task value in Points, on their first 3 completed tasks. They get 10% off those same tasks.</p>
+            <p>You earn 20% of their project value in Points, on their first 3 completed projects. They also earn 10% of those same projects back in Points.</p>
           </div>
         </div>
         <div class="level-row l2">
           <div class="level-badge">L2</div>
           <div class="level-info">
             <h4>Someone they referred</h4>
-            <p>You earn 10% of that task's value in Points, on their first 3 completed tasks.</p>
+            <p>You earn 10% of that project's value in Points, on their first 3 completed projects.</p>
           </div>
         </div>
         <div class="level-row l3">
           <div class="level-badge">L3</div>
           <div class="level-info">
             <h4>Someone that person referred</h4>
-            <p>You earn 5% of that task's value in Points, on their first 3 completed tasks.</p>
+            <p>You earn 5% of that project's value in Points, on their first 3 completed projects.</p>
           </div>
         </div>
       </div>
@@ -85,13 +105,15 @@
         <p><strong>Ali</strong> (referred Nadia directly, Level 1 from Nadia's side) earns <strong>$40</strong> in Points (20% of $200).</p>
         <p><strong>Sara</strong> (Level 2 from Nadia's side) earns <strong>$20</strong> in Points (10% of $200).</p>
         <p><strong>You</strong> (Level 3 from Nadia's side) earn <strong>$10</strong> in Points (5% of $200).</p>
-        <p>This repeats for Nadia's first 3 completed tasks — after that, her further tasks stop generating Points up the chain.</p>
+        <p><strong>Nadia herself</strong> earns <strong>$20</strong> in Points (10% of her own project).</p>
+        <p>This repeats for Nadia's first 3 completed projects — after that, her further projects stop generating Points up the chain. Points are credited once a project is fully paid and completed, not at the 30% upfront stage.</p>
       </div>
     </div>
 
     <div class="deep-block">
       <h2>Finding your link</h2>
-      <p>Every account gets a unique referral link, right there in your dashboard. A dedicated Referrals view shows your direct and indirect referrals at every level, plus your current Points balance.</p>
+      <p>Every account gets a unique referral link, right there in your dashboard. The <strong>Referrals</strong> tab shows everyone in your chain at all three levels, how many Points you have earned, your current balance, and a full history of every Point credited or spent.</p>
+      <p>The complete rules — what voids a referral, what happens on a refund, and what happens if you close your account — are in the <a href="points-policy.html">Referral Points Policy</a>.</p>
     </div>
   </div>
 </section>
@@ -109,31 +131,51 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="nav-logo">
-          <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+          <img src="images/logo-64.png" alt="M&amp;MCore" width="24" height="24">
           M&amp;MCore
         </a>
         <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
       </div>
       <div class="footer-col">
         <h5>Services</h5>
-        <ul><li><a href="services.html">Websites</a></li><li><a href="services.html">Marketing</a></li><li><a href="services.html">Bookkeeping</a></li><li><a href="services.html">Audits & Reports</a></li><li><a href="services.html">Custom AI Agents</a></li></ul>
+        <ul>
+          <li><a href="services.html">Websites</a></li>
+          <li><a href="marketing-services.html">Marketing</a></li>
+          <li><a href="services.html">Bookkeeping</a></li>
+          <li><a href="services.html">Audits &amp; Reports</a></li>
+          <li><a href="services.html">Custom AI Agents</a></li>
+          <li><a href="packages.html">Starter Package</a></li>
+        </ul>
       </div>
       <div class="footer-col">
         <h5>Company</h5>
-        <ul><li><a href="business-pool.html">Business Pool</a></li><li><a href="referral.html">Referral Program</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="tiers.html">Our Pricing</a></li></ul>
+        <ul>
+          <li><a href="business-pool.html">Business Pool</a></li>
+          <li><a href="referral.html">Referral Program</a></li>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="tiers.html">Our Pricing</a></li>
+        </ul>
       </div>
       <div class="footer-col">
         <h5>Legal</h5>
-        <ul><li><a href="terms.html">Terms of Service</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Referral Points Policy</a></li></ul>
+        <ul>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="terms.html#payment">Payment &amp; Delivery</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="points-policy.html">Referral Points Policy</a></li>
+        </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 M&amp;MCore. All rights reserved.</span>
+      <span>&copy; <span class="footer-year">2026</span> M&amp;MCore. All rights reserved.</span>
       <span>Part of the AgenticCore ecosystem</span>
     </div>
   </div>
 </footer>
 
 <script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="chat-widget.js"></script>
 </body>
 </html>

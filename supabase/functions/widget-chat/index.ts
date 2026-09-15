@@ -8,6 +8,11 @@
 // platform-level JWT verification on Edge Functions accepts that as-is,
 // so there's no custom auth check needed here. This endpoint is reached
 // by anonymous, pre-signup visitors by design.
+//
+// Because it IS anonymous and every 'message' call costs a real xAI
+// completion, it is also the one endpoint anyone on the internet can
+// loop to burn credit. The rate limit below is the cheapest useful
+// defence: a per-visitor and per-IP budget, held in memory.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { handleIncomingMessage, getConversationHistory } from '../_shared/bot-core.ts';
@@ -25,6 +30,41 @@ const CORS_HEADERS = {
 
 const MAX_VISITOR_ID_LENGTH = 100;
 const MAX_MESSAGE_LENGTH = 4000;
+
+// Rate limiting. A visitorId is client-generated (localStorage) so it is
+// trivially resettable -- hence the second, coarser budget keyed on the
+// caller's IP, which a single abuser cannot rotate as cheaply. Both are
+// in-memory: an Edge Function instance is short-lived and there may be
+// several, so this is a cost ceiling per instance rather than a strict
+// global guarantee. It costs nothing and stops the obvious script; a
+// determined attacker needs a real WAF rule in front of the function.
+const RATE_WINDOW_MS = 60_000;
+const MAX_MESSAGES_PER_VISITOR_PER_WINDOW = 8;
+const MAX_MESSAGES_PER_IP_PER_WINDOW = 30;
+
+const hits = new Map<string, number[]>();
+
+function tooManyRequests(key: string, limit: number): boolean {
+  const now = Date.now();
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  hits.set(key, recent);
+
+  // Opportunistic cleanup so the map can't grow without bound across a
+  // long-lived instance.
+  if (hits.size > 5000) {
+    for (const [k, times] of hits) {
+      if (!times.some((t) => now - t < RATE_WINDOW_MS)) hits.delete(k);
+    }
+  }
+
+  return recent.length > limit;
+}
+
+function callerIp(req: Request): string {
+  const fwd = req.headers.get('x-forwarded-for');
+  return (fwd ? fwd.split(',')[0] : '').trim() || 'unknown';
+}
 
 const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -62,10 +102,15 @@ export async function handleRequest(req: Request): Promise<Response> {
   }
 
   if (action === 'history') {
-    const history = await getConversationHistory(supabaseAdmin, 'widget', visitorId);
-    return jsonResponse({
-      messages: history.map((m) => ({ role: m.role, content: m.content }))
-    });
+    try {
+      const history = await getConversationHistory(supabaseAdmin, 'widget', visitorId);
+      return jsonResponse({
+        messages: history.map((m) => ({ role: m.role, content: m.content }))
+      });
+    } catch (err) {
+      console.error('widget-chat: getConversationHistory failed:', err);
+      return jsonResponse({ error: 'Failed to load conversation history' }, 500);
+    }
   }
 
   if (action === 'message') {
@@ -76,17 +121,29 @@ export async function handleRequest(req: Request): Promise<Response> {
       return jsonResponse({ error: 'Message too long' }, 400);
     }
 
-    const result = await handleIncomingMessage({
-      supabaseAdmin,
-      channel: 'widget',
-      externalId: visitorId,
-      userMessage: message,
-      xaiApiKey: XAI_API_KEY,
-      model: XAI_MODEL,
-      languageHint: typeof languageHint === 'string' ? languageHint : undefined
-    });
+    if (tooManyRequests(`v:${visitorId}`, MAX_MESSAGES_PER_VISITOR_PER_WINDOW) ||
+        tooManyRequests(`ip:${callerIp(req)}`, MAX_MESSAGES_PER_IP_PER_WINDOW)) {
+      return jsonResponse({
+        error: "You're sending messages faster than I can answer. Give it a moment, or message us on Telegram at t.me/mmcore_support."
+      }, 429);
+    }
 
-    return jsonResponse({ reply: result.reply, needsHuman: result.needsHuman });
+    try {
+      const result = await handleIncomingMessage({
+        supabaseAdmin,
+        channel: 'widget',
+        externalId: visitorId,
+        userMessage: message,
+        xaiApiKey: XAI_API_KEY,
+        model: XAI_MODEL,
+        languageHint: typeof languageHint === 'string' ? languageHint : undefined
+      });
+
+      return jsonResponse({ reply: result.reply, needsHuman: result.needsHuman });
+    } catch (err) {
+      console.error('widget-chat: handleIncomingMessage failed:', err);
+      return jsonResponse({ error: 'Something went wrong on our end. Please try again in a moment.' }, 500);
+    }
   }
 
   return jsonResponse({ error: 'Unknown action -- expected "message" or "history"' }, 400);

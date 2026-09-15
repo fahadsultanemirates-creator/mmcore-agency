@@ -45,7 +45,8 @@ const PRICING_CATALOG = [
     ]
   },
   {
-    category: 'Marketing',
+    category: 'Marketing Essentials',
+    note: 'Light-touch, done-for-you marketing basics. For the full managed AI marketing programmes — avatar video, lead generation, paid media, programmatic SEO — see AI Marketing Services below.',
     items: [
       { name: 'Social media handling (monthly)', price: 39 },
       { name: 'Auto social media posting (monthly)', price: 32.5 },
@@ -97,8 +98,20 @@ const PRICING_CATALOG = [
 
 // Flat M&MCore starter bundle — single tier, same idea as AgenticCore's
 // package bundles but with one fixed price instead of three.
-const MMCORE_STARTER_PACKAGE = { label: 'M&MCore Starter Package', price: 97.5 };
+//
+// Repriced from $97.50 to $69.00. At the catalogue prices above, the
+// package's own contents came to $84.50 (landing page 32.50 + 5-post
+// pack 16.25 + 3 branded documents at 3.25 each + brochure 16.25 +
+// report 9.75) — so the "bundle" was $13 more expensive than buying
+// every part of it separately. $69.00 is a real ~18% saving, and
+// STARTER_PACKAGE_ALACARTE_TOTAL is shown next to it so the comparison
+// is visible rather than something a customer has to work out.
+const MMCORE_STARTER_PACKAGE = { key: 'starter', label: 'M&MCore Starter Package', price: 69 };
+const STARTER_PACKAGE_ALACARTE_TOTAL = 84.5;
 
+// The wizard shows every category in PRICING_CATALOG, which
+// marketing-pricing-catalog.js appends to. Categories carrying a `note`
+// render it above their task list.
 function getCatalogCategory(category) {
   return PRICING_CATALOG.find((c) => c.category === category) || null;
 }

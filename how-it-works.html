@@ -5,7 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How It Works — M&amp;MCore Agency</title>
 <meta name="description" content="A full walkthrough of the M&amp;MCore dashboard — from your first request to a delivered project.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="canonical" href="https://mmcore.agency/how-it-works.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="M&amp;MCore Agency">
+<meta property="og:url" content="https://mmcore.agency/how-it-works.html">
+<meta property="og:title" content="How It Works — M&amp;MCore Agency">
+<meta property="og:description" content="A full walkthrough of the M&amp;MCore dashboard — from your first request to a delivered project.">
+<meta property="og:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How It Works — M&amp;MCore Agency">
+<meta name="twitter:description" content="A full walkthrough of the M&amp;MCore dashboard — from your first request to a delivered project.">
+<meta name="twitter:image" content="https://mmcore.agency/images/og-card.jpg">
+<meta name="theme-color" content="#000000">
 <link rel="stylesheet" href="main.css">
+<link rel="stylesheet" href="chat-widget.css">
 <link rel="stylesheet" href="inner.css">
 </head>
 <body>
@@ -13,11 +31,13 @@
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="index.html" class="nav-logo">
-      <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+      <img src="images/logo-64.png" alt="M&amp;MCore" width="24" height="24">
       M&amp;MCore
     </a>
     <div class="nav-links">
       <a href="services.html">Services</a>
+      <a href="marketing-services.html">Marketing</a>
+      <a href="packages.html">Packages</a>
       <a href="how-it-works.html">How it works</a>
       <a href="business-pool.html">Business Pool</a>
       <a href="referral.html">Referrals</a>
@@ -35,10 +55,10 @@
     <div>
       <span class="hero-eyebrow"><span class="dot"></span> The dashboard, explained</span>
       <h1>How M&amp;MCore actually works</h1>
-      <p class="hero-sub">One dashboard, four sections — nothing to guess about what happens after you sign up.</p>
+      <p class="hero-sub">One dashboard, seven tabs — nothing to guess about what happens after you sign up.</p>
     </div>
     <div class="inner-hero-img">
-      <img src="images/photo-4.jpg" alt="AI-driven workflow connecting requests, agents, and delivery">
+      <img src="images/photo-4.jpg" alt="AI-driven workflow connecting requests, agents, and delivery" width="800" height="1200" fetchpriority="high">
     </div>
   </div>
 </header>
@@ -67,7 +87,7 @@
       <h2>New Request — where a project actually starts</h2>
       <p>Describe what you need in your own words — no forms, no jargon. An agent asks a couple of follow-up questions to pin down the scope, then shows you a clear written summary and price to confirm before anything is charged.</p>
       <ul class="deep-list">
-        <li>One standard tier per service — the price shown when you pick a task is the price, no upsell ladder</li>
+        <li>One standard tier per service — the price shown when you pick a task is the price, no upsell ladder. Any discount you qualify for is already in that number.</li>
         <li>Nothing starts until you approve the scope in writing — that protects you from surprises and us from misunderstandings</li>
         <li>Once confirmed and paid, your project is named automatically and shows up under My Projects</li>
         <li>A real person reviews every confirmed request personally — while our automated project manager is still being refined, nothing runs unsupervised</li>
@@ -79,11 +99,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       </div>
       <span class="deep-index">03</span>
-      <h2>Services — everything we offer, without the clutter</h2>
-      <p>Instead of a page crammed with every service and price, Services is a simple browser: pick a category, see what's included, and jump straight into a request.</p>
+      <h2>Starter Package &amp; Marketing — the two bundled routes</h2>
+      <p>Two tabs sit beside New Request for the orders that don't need scoping, because their contents are already fixed.</p>
       <ul class="deep-list">
-        <li>Websites, marketing, bookkeeping, audits &amp; feasibility reports, and more — organized by category, not buried in a wall of text</li>
-        <li>Every service runs at one standard tier, handled directly by our own team and agents</li>
+        <li><strong>Starter Package</strong> — the $69 bundle for a business starting from nothing. Once its payment clears, every additional service you order is 50% off, permanently.</li>
+        <li><strong>Marketing</strong> — the monthly AI marketing packages, billed for each month in advance rather than on the 30/70 split. Cancel any time before the next month starts.</li>
+        <li>Individual marketing services can also be picked à la carte from New Request, same as everything else</li>
       </ul>
     </div>
 
@@ -93,16 +114,36 @@
       </div>
       <span class="deep-index">04</span>
       <h2>Billing — everything in one place</h2>
-      <p>Pay directly from the dashboard — no separate invoicing portal to chase. Every service follows the same split: 30% upfront to start, 70% once the finished work is delivered and approved.</p>
+      <p>Pay directly from the dashboard — no separate invoicing portal to chase. One-off project work follows the same split every time: <strong>30% upfront</strong> to start, <strong>70%</strong> once the finished work is delivered and approved. Monthly services and marketing packages are billed in full for each month, in advance — there's no completion to hold a balance against.</p>
+      <p>We take payment in <strong>USDT on BEP20 (BNB Smart Chain)</strong>. Place an order and the exact amount, the address and a QR code appear immediately; send it, message us the transaction hash, and a person confirms it — usually within a few hours.</p>
+      <p>The Billing tab keeps the full history: every payment, its stage, its status, and any Points you applied.</p>
+    </div>
+
+    <div class="deep-block">
+      <div class="bento-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="deep-index">05</span>
+      <h2>Referrals — your chain, your Points, your history</h2>
+      <p>Your referral link, everyone who joined through it at all three levels, how much you've earned, and a full ledger of every Point credited or spent. Points come straight off your next order — tick one box when you submit a request. <a href="referral.html">See how the programme works →</a></p>
+    </div>
+
+    <div class="deep-block">
+      <div class="bento-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <span class="deep-index">06</span>
+      <h2>Mint — the assistant that helps you scope it</h2>
+      <p>Not sure what you actually need, or what it should cost? Mint knows the full price list and how we work, remembers your previous conversations, and will help you shape a request before you submit it. When something needs real judgment, it puts a person in front of you rather than guessing.</p>
     </div>
 
     <div class="deep-block">
       <div class="bento-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/></svg>
       </div>
-      <span class="deep-index">05</span>
+      <span class="deep-index">07</span>
       <h2>Business Pool — for clients who keep coming back</h2>
-      <p>Cross a set spend threshold and you're automatically moved to a separate, elevated experience — faster delivery, a dedicated human manager, and a real discount. <a href="business-pool.html">Read the full breakdown →</a></p>
+      <p>Cross $5,000 in lifetime spend and you're automatically moved to a separate, elevated experience — faster delivery, a dedicated human manager, and 20% off every service, applied to your prices the moment you qualify. <a href="business-pool.html">Read the full breakdown →</a></p>
     </div>
   </div>
 </section>
@@ -120,31 +161,51 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="nav-logo">
-          <img src="images/logo.png" alt="M&amp;MCore" width="24" height="24">
+          <img src="images/logo-64.png" alt="M&amp;MCore" width="24" height="24">
           M&amp;MCore
         </a>
         <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
       </div>
       <div class="footer-col">
         <h5>Services</h5>
-        <ul><li><a href="services.html">Websites</a></li><li><a href="services.html">Marketing</a></li><li><a href="services.html">Bookkeeping</a></li><li><a href="services.html">Audits & Reports</a></li><li><a href="services.html">Custom AI Agents</a></li></ul>
+        <ul>
+          <li><a href="services.html">Websites</a></li>
+          <li><a href="marketing-services.html">Marketing</a></li>
+          <li><a href="services.html">Bookkeeping</a></li>
+          <li><a href="services.html">Audits &amp; Reports</a></li>
+          <li><a href="services.html">Custom AI Agents</a></li>
+          <li><a href="packages.html">Starter Package</a></li>
+        </ul>
       </div>
       <div class="footer-col">
         <h5>Company</h5>
-        <ul><li><a href="business-pool.html">Business Pool</a></li><li><a href="referral.html">Referral Program</a></li><li><a href="how-it-works.html">How it works</a></li><li><a href="tiers.html">Our Pricing</a></li></ul>
+        <ul>
+          <li><a href="business-pool.html">Business Pool</a></li>
+          <li><a href="referral.html">Referral Program</a></li>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="tiers.html">Our Pricing</a></li>
+        </ul>
       </div>
       <div class="footer-col">
         <h5>Legal</h5>
-        <ul><li><a href="terms.html">Terms of Service</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Referral Points Policy</a></li></ul>
+        <ul>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="terms.html#payment">Payment &amp; Delivery</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="points-policy.html">Referral Points Policy</a></li>
+        </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 M&amp;MCore. All rights reserved.</span>
+      <span>&copy; <span class="footer-year">2026</span> M&amp;MCore. All rights reserved.</span>
       <span>Part of the AgenticCore ecosystem</span>
     </div>
   </div>
 </footer>
 
 <script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="chat-widget.js"></script>
 </body>
 </html>
