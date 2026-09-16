@@ -6,6 +6,7 @@
 <title>Check your email — M&amp;MCore Agency</title>
 <link rel="stylesheet" href="main.css">
 <link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="chat-widget.css">
 </head>
 <body>
 
@@ -17,11 +18,15 @@
     <h1>Check your email</h1>
     <p class="auth-sub">We've sent a confirmation link to the email you signed up with. Click it to activate your account, then log in.</p>
     <a href="login.html" class="btn btn-primary" style="display:block;text-align:center;">Go to login</a>
-    <p style="text-align:center;margin-top:var(--space-md);">
+    <p style="text-align:center;margin-top:var(--space-md);display:flex;gap:0.6rem;justify-content:center;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="history.back()">← Back</button>
       <a href="index.html" class="btn btn-primary btn-sm auth-home-btn">Home</a>
     </p>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
+<script src="chat-widget.js"></script>
 </body>
 </html>

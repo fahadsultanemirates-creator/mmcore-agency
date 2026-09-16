@@ -1,13 +1,43 @@
-// M&MCore Agency — homepage chat widget. The visual widget (floating
-// button + panel) is in place now, but the AI assistant itself is
-// deferred until the rest of the site is finished -- there's no
-// widget-chat Edge Function behind this yet. It's a self-contained
-// placeholder: no network calls, just a static greeting and an instant
-// canned reply, plus a real link to Telegram for anyone who wants a
-// human now. Swap this file out once the assistant is actually built.
-const MANAGER_TELEGRAM_URL = 'https://t.me/mmcore_managers';
-const PLACEHOLDER_GREETING = "Hi! I'm the M&MCore assistant — I'm still being set up. For anything urgent right now, message us on Telegram and a real person will get back to you.";
-const PLACEHOLDER_REPLY = "Thanks for the message! I can't answer yet -- my setup isn't finished. Message us on Telegram below and a real person will help in the meantime.";
+// M&MCore Agency — homepage chat widget, wired to the widget-chat Edge
+// Function (../supabase/functions/widget-chat), which shares the same
+// xAI-powered brain as the Telegram bot and the dashboard's "Mint"
+// assistant via ../supabase/functions/_shared/bot-core.ts. A per-visitor
+// id is kept in localStorage so a returning visitor's conversation
+// picks up where it left off (server-side history, not just this tab).
+const MANAGER_TELEGRAM_URL = 'https://t.me/AgenticCoreAgency';
+const VISITOR_ID_KEY = 'mmcore_chat_visitor_id';
+const GREETING = "Hi! I'm the M&MCore assistant — ask me about pricing, services, or how anything works. For something urgent right now, you can also message us directly on Telegram.";
+const ERROR_REPLY = "Something went wrong reaching the assistant just now. Please try again in a moment, or message us on Telegram below.";
+
+function getVisitorId() {
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : `v-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch (e) {
+    // localStorage unavailable (private mode, blocked storage) -- fall
+    // back to a per-page-load id rather than breaking the widget.
+    return `v-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  }
+}
+
+async function callWidgetChat(action, payload) {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/widget-chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_PUBLISHABLE_KEY,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+    },
+    body: JSON.stringify({ action, visitorId: getVisitorId(), ...payload })
+  });
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) throw new Error(data?.error || `widget-chat failed (${resp.status})`);
+  return data;
+}
 
 function buildWidgetMarkup() {
   const wrap = document.createElement('div');
@@ -77,20 +107,28 @@ function removeTypingIndicator() {
   const form = document.getElementById('chatWidgetForm');
   const input = document.getElementById('chatWidgetInput');
 
-  let greeted = false;
+  let opened = false;
   let sending = false;
 
-  function openPanel() {
+  async function openPanel() {
     panel.hidden = false;
     toggleBtn.classList.add('is-open');
     toggleBtn.setAttribute('aria-expanded', 'true');
-
-    if (!greeted) {
-      greeted = true;
-      appendMessage(messagesEl, 'assistant', PLACEHOLDER_GREETING);
-      appendHandoffLink(messagesEl);
-    }
     input.focus();
+
+    if (opened) return;
+    opened = true;
+
+    try {
+      const { messages } = await callWidgetChat('history', {});
+      if (messages && messages.length) {
+        messages.forEach((m) => appendMessage(messagesEl, m.role, m.content));
+        return;
+      }
+    } catch (e) {
+      console.error('chat-widget: history load failed', e);
+    }
+    appendMessage(messagesEl, 'assistant', GREETING);
   }
 
   function closePanel() {
@@ -108,7 +146,7 @@ function removeTypingIndicator() {
     if (e.key === 'Escape' && !panel.hidden) closePanel();
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const text = input.value.trim();
     if (!text || sending) return;
@@ -119,15 +157,23 @@ function removeTypingIndicator() {
     input.disabled = true;
     appendTypingIndicator(messagesEl);
 
-    // No backend yet -- a short delay just keeps the "thinking" indicator
-    // from flashing instantly, so it still feels like a real reply.
-    setTimeout(() => {
+    try {
+      const result = await callWidgetChat('message', {
+        message: text,
+        languageHint: navigator.language
+      });
       removeTypingIndicator();
-      appendMessage(messagesEl, 'assistant', PLACEHOLDER_REPLY);
+      appendMessage(messagesEl, 'assistant', result.reply);
+      if (result.needsHuman) appendHandoffLink(messagesEl);
+    } catch (err) {
+      console.error('chat-widget: message failed', err);
+      removeTypingIndicator();
+      appendMessage(messagesEl, 'assistant', ERROR_REPLY);
       appendHandoffLink(messagesEl);
+    } finally {
       sending = false;
       input.disabled = false;
       input.focus();
-    }, 500);
+    }
   });
 })();

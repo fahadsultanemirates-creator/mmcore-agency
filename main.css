@@ -781,6 +781,202 @@ section {
   max-width: 280px;
 }
 
+.footer-social-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: var(--space-md) 0 var(--space-xs) !important;
+  max-width: none !important;
+}
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.footer-social-link {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.footer-social-link svg {
+  width: 22px;
+  height: 22px;
+}
+
+.footer-social-link:hover {
+  border-color: var(--accent-magenta);
+  color: var(--accent-magenta);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   Hero messenger CTAs (Telegram / WhatsApp)
+   ============================================ */
+
+.hero-chat-lead {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  margin: var(--space-md) 0 var(--space-xs);
+}
+
+.hero-chat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: var(--space-md);
+}
+
+.hero-grid .hero-chat-actions {
+  justify-content: flex-start;
+}
+
+.btn-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-chat:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+.btn-chat svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.btn-chat-telegram {
+  background: #229ED9;
+}
+
+.btn-chat-whatsapp {
+  background: #25D366;
+}
+
+/* ============================================
+   Featured services grid (landing page)
+   ============================================ */
+
+.service-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+.service-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.service-card:hover {
+  border-color: rgba(229, 22, 154, 0.35);
+  transform: translateY(-2px);
+}
+
+.service-card-name {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.6rem;
+}
+
+.service-card-price {
+  display: block;
+  color: var(--accent-magenta);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+}
+
+.service-card-unit {
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+  font-weight: 400;
+}
+
+/* ============================================
+   Vertical teasers (Real Estate / Forex & Crypto)
+   ============================================ */
+
+.vertical-teasers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.vertical-teaser {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  align-items: center;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.vertical-teaser-media {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.vertical-teaser-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  max-height: 280px;
+}
+
+.vertical-teaser-body h3 {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-xs);
+}
+
+.vertical-teaser-body p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-sm);
+}
+
+@media (max-width: 900px) {
+  .vertical-teasers {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .vertical-teaser {
+    grid-template-columns: 1fr;
+  }
+  .vertical-teaser-media img {
+    max-height: 200px;
+  }
+}
+
 .footer-col h5 {
   font-family: var(--font-mono);
   font-size: 0.75rem;

@@ -544,7 +544,7 @@ export async function handleRequest(req: Request): Promise<Response> {
     // short of dropping the update, which is the safer failure mode.
     await sendTelegramMessage(
       chatId,
-      'Something went wrong on our end. Please try again in a moment, or reach out directly: https://t.me/mmcore_managers'
+      'Something went wrong on our end. Please try again in a moment, or reach out directly: https://t.me/AgenticCoreAgency'
     ).catch(() => {});
   }
 

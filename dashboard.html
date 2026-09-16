@@ -23,6 +23,7 @@
       <a href="referral.html">Referrals</a>
     </div>
     <div class="nav-cta">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="history.back()">← Back</button>
       <a href="index.html" class="btn btn-primary btn-sm">Home</a>
       <button type="button" class="btn btn-secondary btn-sm" id="logoutBtn">Log out</button>
     </div>
@@ -48,8 +49,12 @@
       </div>
       <div class="dash-card" id="supportCard">
         <span class="panel-tag">Support</span>
-        <p class="dash-card-note">Our AI agent specialist is available on Telegram, 24/7.</p>
-        <a href="https://t.me/mmcore_support" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Message us on Telegram</a>
+        <p class="dash-card-note">Reach us on Telegram, WhatsApp, or email — 24/7.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+          <a href="https://t.me/AgenticCoreAgency" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">Telegram</a>
+          <a href="https://wa.me/18089985226" class="btn btn-secondary btn-sm" target="_blank" rel="noopener">WhatsApp</a>
+          <button type="button" class="btn btn-secondary btn-sm" id="emailSupportBtn" data-email="hello@agenticcore.agency">Email us</button>
+        </div>
       </div>
     </div>
   </div>
@@ -65,7 +70,7 @@
           <p class="bp-progress-text" id="bpProgressText">$0 / $5,000</p>
         </div>
         <p class="bp-unlocked-text" id="bpUnlockedText" style="display:none;">You're in — a dedicated human manager is handling your account.</p>
-        <a href="https://t.me/mmcore_managers" class="btn btn-primary btn-sm" id="bpManagerBtn" target="_blank" rel="noopener" style="display:none;">Message your manager</a>
+        <a href="https://t.me/AgenticCoreAgency" class="btn btn-primary btn-sm" id="bpManagerBtn" target="_blank" rel="noopener" style="display:none;">Message your manager</a>
       </div>
       <ul class="bp-perks" id="bpPerksList">
         <li>20% off all services — applied automatically</li>
