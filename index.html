@@ -24,6 +24,7 @@
       <a href="referral.html">Referrals</a>
     </div>
     <div class="nav-cta">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="history.back()">← Back</button>
       <a href="login.html" class="btn btn-secondary btn-sm">Log in</a>
       <a href="signup.html" class="btn btn-primary btn-sm">Get started</a>
     </div>
@@ -41,6 +42,17 @@
       <div class="hero-actions">
         <a href="signup.html" class="btn btn-primary">Start your project</a>
         <a href="#how-it-works" class="btn btn-secondary">See how it works</a>
+      </div>
+      <p class="hero-chat-lead">Or talk to us directly:</p>
+      <div class="hero-chat-actions">
+        <a href="https://t.me/AgenticCoreAgency" class="btn-chat btn-chat-telegram" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M21.9 4.5 18.6 20c-.25 1.1-.9 1.37-1.83.85l-5.06-3.73-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15L18.5 6.6c.42-.37-.09-.58-.65-.2L6.3 13.65l-4.98-1.56c-1.08-.34-1.1-1.08.23-1.6L20.5 3.4c.9-.34 1.68.2 1.4 1.1z"/></svg>
+          Telegram
+        </a>
+        <a href="https://wa.me/18089985226" class="btn-chat btn-chat-whatsapp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.36 2 11.75c0 2.02.63 3.9 1.7 5.46L2.5 22l4.98-1.3a10.1 10.1 0 0 0 4.52 1.06c5.52 0 10-4.36 10-9.75S17.52 2 12 2zm5.2 13.9c-.22.6-1.27 1.15-1.75 1.2-.45.05-.9.24-3.03-.63-2.56-1.05-4.2-3.65-4.33-3.82-.13-.17-1.03-1.37-1.03-2.6 0-1.24.65-1.85.88-2.1.22-.25.5-.3.66-.3l.48.01c.15.01.36-.06.56.43.22.53.75 1.82.81 1.96.06.14.1.3.02.48-.09.18-.13.3-.26.46-.13.16-.28.35-.4.47-.13.13-.27.27-.12.53.15.26.68 1.12 1.46 1.82 1 .9 1.85 1.18 2.11 1.31.26.13.41.11.56-.07.15-.18.63-.73.8-.98.17-.25.34-.2.57-.12.23.08 1.47.7 1.72.82.25.13.42.19.48.3.06.11.06.62-.15 1.23z"/></svg>
+          WhatsApp
+        </a>
       </div>
     </div>
     <div class="hero-media">
@@ -146,6 +158,44 @@
   </div>
 </section>
 
+<!-- ============ FEATURED LOW-PRICE SERVICES ============ -->
+<section id="featured-services">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Real prices, starting at $32</span>
+      <h2>Some of our most popular services</h2>
+      <p>A sample of what's on offer — we run far more than these ten. See the full catalog, and our marketing lineup, on the Services page.</p>
+    </div>
+    <div class="service-cards" id="featuredServiceCards"></div>
+    <p style="text-align:center;margin-top:var(--space-lg);">
+      <a href="services.html" style="color:var(--accent-magenta);border-bottom:1px solid rgba(229,22,154,0.3);">See the full price list →</a>
+    </p>
+  </div>
+</section>
+<script>
+(function renderFeaturedServices() {
+  const FEATURED_SERVICES = [
+    { name: 'Single landing page website', unit: 'one-time', price: 32.5 },
+    { name: 'Social media post pack (10 posts)', unit: 'one-time', price: 32.5 },
+    { name: 'Business audit', unit: 'one-time', price: 32.5 },
+    { name: 'Ongoing bookkeeping', unit: 'per month', price: 32.5 },
+    { name: 'Auto social media posting', unit: 'per month', price: 32.5 },
+    { name: 'SEO optimization', unit: 'one-time', price: 39 },
+    { name: 'Bookkeeping cleanup', unit: 'one-time', price: 39 },
+    { name: 'Real estate project feasibility report', unit: 'one-time', price: 65 },
+    { name: 'Multi-page website (3-5 pages)', unit: 'one-time', price: 97.5 },
+    { name: 'Single-task AI agent', unit: 'one-time', price: 97.5 }
+  ];
+  const fmt = (n) => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('featuredServiceCards').innerHTML = FEATURED_SERVICES.map((s) => `
+    <div class="service-card">
+      <span class="service-card-name">${s.name}</span>
+      <span class="service-card-price">${fmt(s.price)} <span class="service-card-unit">${s.unit}</span></span>
+    </div>
+  `).join('');
+})();
+</script>
+
 <!-- ============ QUICK LINKS ============ -->
 <section class="quick-links">
   <div class="container">
@@ -240,6 +290,38 @@
   </div>
 </section>
 
+<!-- ============ SPECIALIZED VERTICALS: REAL ESTATE + FOREX/CRYPTO ============ -->
+<section id="verticals">
+  <div class="container">
+    <div class="section-head">
+      <span class="section-eyebrow">Specialized verticals</span>
+      <h2>Built for two industries that need more than a generic template</h2>
+    </div>
+    <div class="vertical-teasers">
+      <div class="vertical-teaser">
+        <div class="vertical-teaser-media">
+          <img src="images/real-estate-1.jpg" alt="AI-powered real estate marketing — property listings, market growth, and audience insights">
+        </div>
+        <div class="vertical-teaser-body">
+          <h3>Real Estate, AI Powered</h3>
+          <p>AI-run social media marketing built specifically for agents and brokerages — listing content, audience targeting, and growth tracking, kept running automatically instead of posted whenever someone remembers.</p>
+          <a href="real-estate.html" class="btn btn-primary btn-sm">See the full Real Estate page →</a>
+        </div>
+      </div>
+      <div class="vertical-teaser">
+        <div class="vertical-teaser-media">
+          <img src="images/forex-1.jpg" alt="Forex, fully automated — AI trading bot with 24/7 monitoring and built-in risk control">
+        </div>
+        <div class="vertical-teaser-body">
+          <h3>Forex &amp; Crypto, Fully Automated</h3>
+          <p>An AI-run trading bot that watches the market around the clock, with built-in risk control — Forex and crypto pairs, monitored and managed while you're not.</p>
+          <a href="forex-crypto.html" class="btn btn-primary btn-sm">See the full Forex &amp; Crypto page →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ VIP + REFERRAL ============ -->
 <section id="vip">
   <div class="container">
@@ -290,6 +372,27 @@
           M&amp;MCore
         </a>
         <p>AI-run business setup, delivered by agents. One standard tier, real prices. Part of the AgenticCore ecosystem.</p>
+        <p class="footer-social-label">Follow us</p>
+        <div class="footer-social">
+          <a href="https://www.facebook.com/share/18UY6cCSEW/" class="footer-social-link" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.91h-2.33V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+          </a>
+          <a href="https://instagram.com/mmcoreagency" class="footer-social-link" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://x.com/mmcoreagency" class="footer-social-link" target="_blank" rel="noopener" aria-label="X">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-6.6L4.5 22H1.4l8.1-9.3L1 2h7.1l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 4H5.4l12.3 16z"/></svg>
+          </a>
+          <a href="https://t.me/mmcoreagency" class="footer-social-link" target="_blank" rel="noopener" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.5 18.6 20c-.25 1.1-.9 1.37-1.83.85l-5.06-3.73-2.44 2.35c-.27.27-.5.5-1.02.5l.36-5.15L18.5 6.6c.42-.37-.09-.58-.65-.2L6.3 13.65l-4.98-1.56c-1.08-.34-1.1-1.08.23-1.6L20.5 3.4c.9-.34 1.68.2 1.4 1.1z"/></svg>
+          </a>
+          <a href="https://whatsapp.com/channel/0029Vb9AeziDTkK7d7YvBO3x" class="footer-social-link" target="_blank" rel="noopener" aria-label="WhatsApp Channel">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.36 2 11.75c0 2.02.63 3.9 1.7 5.46L2.5 22l4.98-1.3a10.1 10.1 0 0 0 4.52 1.06c5.52 0 10-4.36 10-9.75S17.52 2 12 2zm5.2 13.9c-.22.6-1.27 1.15-1.75 1.2-.45.05-.9.24-3.03-.63-2.56-1.05-4.2-3.65-4.33-3.82-.13-.17-1.03-1.37-1.03-2.6 0-1.24.65-1.85.88-2.1.22-.25.5-.3.66-.3l.48.01c.15.01.36-.06.56.43.22.53.75 1.82.81 1.96.06.14.1.3.02.48-.09.18-.13.3-.26.46-.13.16-.28.35-.4.47-.13.13-.27.27-.12.53.15.26.68 1.12 1.46 1.82 1 .9 1.85 1.18 2.11 1.31.26.13.41.11.56-.07.15-.18.63-.73.8-.98.17-.25.34-.2.57-.12.23.08 1.47.7 1.72.82.25.13.42.19.48.3.06.11.06.62-.15 1.23z"/></svg>
+          </a>
+          <a href="https://youtube.com/@mmcoreagency" class="footer-social-link" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 7.2s-.23-1.64-.94-2.36c-.9-.94-1.9-.95-2.36-1C16.9 3.5 12 3.5 12 3.5h-.01s-4.9 0-8.2.34c-.46.05-1.46.06-2.36 1C.72 5.56.5 7.2.5 7.2S.25 9.13.25 11.05v1.8c0 1.93.25 3.85.25 3.85s.23 1.64.93 2.36c.9.95 2.08.92 2.6 1.02 1.89.18 8.02.34 8.02.34s4.9-.01 8.2-.35c.46-.05 1.46-.06 2.36-1 .7-.72.93-2.36.93-2.36s.25-1.92.25-3.85v-1.8c0-1.92-.25-3.85-.25-3.85zM9.7 14.9V7.85l6.5 3.53-6.5 3.52z"/></svg>
+          </a>
+        </div>
       </div>
       <div class="footer-col">
         <h5>Services</h5>
@@ -299,6 +402,8 @@
           <li><a href="services.html">Bookkeeping</a></li>
           <li><a href="services.html">Audits &amp; Reports</a></li>
           <li><a href="services.html">Custom AI Agents</a></li>
+          <li><a href="real-estate.html">Real Estate</a></li>
+          <li><a href="forex-crypto.html">Forex &amp; Crypto</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -328,6 +433,8 @@
 
 <script src="network-animation.js"></script>
 <script src="main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase-client.js"></script>
 <script src="chat-widget.js"></script>
 </body>
 </html>

@@ -7,8 +7,8 @@
 //
 // Unlike the anonymous widget-chat, this requires a real session:
 // resolves the caller's identity from their own Authorization header via
-// a narrowly-scoped client (same pattern as payram-create-payment),
-// rejecting with 401 if not logged in. That resolved user id is the
+// a narrowly-scoped client, rejecting with 401 if not logged in. That
+// resolved user id is the
 // conversation's external_id -- never a client-supplied value -- so
 // persistent memory across visits falls out of the existing schema for
 // free, same as Telegram and the widget.
@@ -41,9 +41,8 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-// Same pattern as payram-create-payment/index.ts -- resolves the
-// caller's real identity from their own Authorization header via a
-// narrowly scoped client, rather than trusting anything the request
+// Resolves the caller's real identity from their own Authorization header
+// via a narrowly scoped client, rather than trusting anything the request
 // body says.
 async function resolveCaller(authHeader: string): Promise<{ id: string } | null> {
   const callerClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

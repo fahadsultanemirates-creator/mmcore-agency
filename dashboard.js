@@ -78,6 +78,23 @@ function renderBusinessPoolSection(profile) {
   }
 }
 
+const emailSupportBtn = document.getElementById('emailSupportBtn');
+if (emailSupportBtn) {
+  emailSupportBtn.addEventListener('click', async () => {
+    const email = emailSupportBtn.dataset.email;
+    const original = emailSupportBtn.textContent;
+    try {
+      await navigator.clipboard.writeText(email);
+      emailSupportBtn.textContent = 'Copied!';
+    } catch (e) {
+      // Clipboard unavailable -- mailto: still gives the visitor a way
+      // to reach us, so fall through to it below regardless.
+    }
+    window.location.href = `mailto:${email}`;
+    setTimeout(() => { emailSupportBtn.textContent = original; }, 1500);
+  });
+}
+
 document.getElementById('copyReferralBtn').addEventListener('click', async () => {
   const input = document.getElementById('referralLinkInput');
   input.select();
@@ -261,10 +278,8 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// -------- Checkout: PayRam + manual USDT (BEP20) --------
-// 30% due upfront, same split shown to visitors on services.html/terms.html
-// and enforced server-side by payram-create-payment -- kept here too so the
-// USDT option can display an amount even when PayRam itself is unreachable.
+// -------- Checkout: USDT (BEP20), the sole payment method --------
+// 30% due upfront, same split shown to visitors on services.html/terms.html.
 const UPFRONT_FRACTION = 0.3;
 const USDT_BEP20_ADDRESS = '0xdc496FcA8B8d2743b55Da0d082eAFc90f6609D8f';
 
@@ -272,61 +287,17 @@ function upfrontAmountDue(agreedPrice) {
   return Math.round(agreedPrice * UPFRONT_FRACTION * 100) / 100;
 }
 
-// Calls payram-create-payment with the caller's own session token (the
-// function resolves identity server-side and re-verifies the request
-// belongs to them -- this call can't be spoofed into paying for someone
-// else's request). Returns { url, amountDue } on success or { error }
-// on failure; never throws, so a PayRam hiccup can't break the request
-// submission it's called after.
-async function initiatePayramPayment(requestId) {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) return { error: 'Not authenticated' };
-
-  try {
-    const resp = await fetch(`${SUPABASE_URL}/functions/v1/payram-create-payment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({ requestId })
-    });
-    const data = await resp.json().catch(() => null);
-    if (!resp.ok || !data?.url) {
-      return { error: data?.error || 'Could not create a payment link.' };
-    }
-    return { url: data.url, amountDue: data.amountDue };
-  } catch (err) {
-    console.error('initiatePayramPayment failed:', err);
-    return { error: 'Could not reach the payment provider.' };
-  }
-}
-
-// Renders both checkout options into an already-visible success banner:
-// the PayRam link (or a graceful fallback note if that call failed) and
-// manual USDT (BEP20) -- always available since it doesn't depend on
-// PayRam. USDT payments aren't automatically confirmed like PayRam's are
-// (no webhook watches this address), so this asks the client to notify
-// support with their request id + transaction hash for manual review.
-function renderPaymentCTA(container, { requestId, amountDue, payram }) {
+// Renders the USDT (BEP20) payment instructions into an already-visible
+// success banner. Payments aren't automatically confirmed (no webhook
+// watches this address), so this asks the client to notify support with
+// their request id + transaction hash for manual review.
+function renderPaymentCTA(container, { requestId, amountDue }) {
   const wrap = document.createElement('div');
   wrap.style.marginTop = 'var(--space-sm, 0.75rem)';
-  wrap.style.display = 'flex';
-  wrap.style.flexWrap = 'wrap';
-  wrap.style.gap = 'var(--space-md, 1rem)';
-
-  const payramCol = document.createElement('div');
-  if (payram.url) {
-    payramCol.innerHTML = `<a href="${payram.url}" target="_blank" rel="noopener" class="btn btn-primary">Pay ${formatMoney(payram.amountDue)} to start your project →</a>`;
-  } else {
-    const reason = (payram.error || 'something went wrong generating it automatically').replace(/\.+$/, '');
-    payramCol.textContent = `Card/other crypto payment link: we'll follow up shortly — ${reason}.`;
-  }
-  wrap.appendChild(payramCol);
 
   const usdtCol = document.createElement('div');
   usdtCol.innerHTML = `
-    <p class="dash-card-note" style="margin:0 0 0.4rem;">Or pay ${formatMoney(amountDue)} in USDT (BEP20 / BNB Smart Chain):</p>
+    <p class="dash-card-note" style="margin:0 0 0.4rem;">Pay ${formatMoney(amountDue)} in USDT (BEP20 / BNB Smart Chain) to start your project:</p>
     <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
       <img src="images/usdt-bep20-qr.png" alt="USDT BEP20 address QR code" style="width:80px;height:80px;border-radius:6px;">
       <div>
@@ -334,7 +305,7 @@ function renderPaymentCTA(container, { requestId, amountDue, payram }) {
         <button type="button" class="btn btn-secondary btn-sm copy-usdt-address-btn" style="margin-top:0.3rem;">Copy address</button>
       </div>
     </div>
-    <p class="dash-card-note" style="margin:0.4rem 0 0;">After sending, message us on <a href="https://t.me/mmcore_support" target="_blank" rel="noopener">Telegram</a> with your request ID (<code>${requestId}</code>) and transaction hash so we can confirm it — USDT payments are verified manually.</p>
+    <p class="dash-card-note" style="margin:0.4rem 0 0;">After sending, message us on <a href="https://t.me/AgenticCoreAgency" target="_blank" rel="noopener">Telegram</a> with your request ID (<code>${requestId}</code>) and transaction hash so we can confirm it — payments are verified manually.</p>
   `;
   wrap.appendChild(usdtCol);
 
@@ -526,8 +497,6 @@ function initCatalogWizard(cfg) {
       return;
     }
 
-    const paymentResult = await initiatePayramPayment(insertedRequest.id);
-
     btn.disabled = false;
     btn.textContent = originalLabel;
 
@@ -541,7 +510,7 @@ function initCatalogWizard(cfg) {
 
     successEl.textContent = cfg.successMessage;
     successEl.style.display = 'block';
-    renderPaymentCTA(successEl, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(agreedPrice), payram: paymentResult });
+    renderPaymentCTA(successEl, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(agreedPrice) });
     if (cfg.onSuccess) cfg.onSuccess();
   });
 
@@ -637,8 +606,6 @@ function initPackagesTab(profile) {
       return;
     }
 
-    const paymentResult = await initiatePayramPayment(insertedRequest.id);
-
     btn.disabled = false;
     btn.textContent = originalLabel;
 
@@ -647,7 +614,7 @@ function initPackagesTab(profile) {
 
     successEl.textContent = 'Package order submitted — you can now add extra services at 50% off below, and track your order under My Projects.';
     successEl.style.display = 'block';
-    renderPaymentCTA(successEl, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(MMCORE_STARTER_PACKAGE.price), payram: paymentResult });
+    renderPaymentCTA(successEl, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(MMCORE_STARTER_PACKAGE.price) });
     unlockAddonSection(profile);
     renderProjectsPanel(profile.id);
   });
@@ -697,7 +664,7 @@ async function initPackagesPanel(profile) {
 
 // -------- Marketing Services packages tab --------
 // Same "Select & Pay" pattern as the M&MCore Starter Package tab (insert
-// into requests, then kick off PayRam) -- just driven by
+// into requests, then show the USDT payment CTA) -- just driven by
 // MMCORE_MARKETING_PACKAGES instead of the single starter bundle. The
 // Custom Package never has a price, so it links straight to Telegram
 // support instead of submitting a request.
@@ -716,7 +683,7 @@ function initMarketingPackagesTab(profile) {
       </ul>
       ${pkg.price !== null
         ? `<button type="button" class="btn ${pkg.featured ? 'btn-primary' : 'btn-secondary'}" data-pkg-idx="${idx}">Get started — ${formatMoney(pkg.price)}/mo</button>`
-        : `<a href="https://t.me/mmcore_support" class="btn btn-secondary" target="_blank" rel="noopener">Talk to us</a>`}
+        : `<a href="https://t.me/AgenticCoreAgency" class="btn btn-secondary" target="_blank" rel="noopener">Talk to us</a>`}
       <p class="dash-card-note" id="marketingPkgNote-${idx}"></p>
     </div>
   `).join('');
@@ -750,13 +717,169 @@ function initMarketingPackagesTab(profile) {
         return;
       }
 
-      const paymentResult = await initiatePayramPayment(insertedRequest.id);
       btn.disabled = false;
       btn.textContent = 'Submitted — check My Projects';
       note.textContent = 'Order submitted.';
-      renderPaymentCTA(note, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(pkg.price), payram: paymentResult });
+      renderPaymentCTA(note, { requestId: insertedRequest.id, amountDue: upfrontAmountDue(pkg.price) });
       renderProjectsPanel(profile.id);
     });
+  });
+}
+
+// -------- Forge FAB: "Mint", the dashboard's own project-intake assistant --------
+// Same visual pattern as the homepage chat-widget, wired to the mint-chat
+// Edge Function instead of widget-chat -- authenticated, and able to file
+// a manager task directly from the conversation.
+const MINT_TELEGRAM_URL = 'https://t.me/AgenticCoreAgency';
+const MINT_GREETING = "Hi, I'm Mint — describe a project you'd like to start, or ask about pricing, timelines, or how anything here works.";
+const MINT_ERROR_REPLY = "Something went wrong reaching Mint just now. Please try again in a moment, or message us directly on Telegram.";
+
+async function callMintChat(action, payload) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) throw new Error('Not authenticated');
+
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/mint-chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`
+    },
+    body: JSON.stringify({ action, ...payload })
+  });
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) throw new Error(data?.error || `mint-chat failed (${resp.status})`);
+  return data;
+}
+
+function buildForgeFabMarkup() {
+  const wrap = document.createElement('div');
+  wrap.className = 'forge-fab';
+  wrap.innerHTML = `
+    <button type="button" class="forge-fab-toggle" id="forgeFabToggle" aria-label="Chat with Mint" aria-expanded="false">
+      <svg id="forgeFabIconChat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <svg id="forgeFabIconClose" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="forge-fab-panel" id="forgeFabPanel" hidden>
+      <div class="forge-fab-header"><span>Mint — Project Assistant</span></div>
+      <div class="forge-fab-messages" id="forgeFabMessages" aria-live="polite"></div>
+      <form class="forge-fab-form" id="forgeFabForm">
+        <input type="text" id="forgeFabInput" class="forge-fab-input" placeholder="Describe your project or ask a question…" autocomplete="off" maxlength="4000">
+        <button type="submit" class="forge-fab-send" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+  `;
+  return wrap;
+}
+
+function appendForgeMessage(container, role, text) {
+  const el = document.createElement('div');
+  el.className = `forge-fab-message forge-fab-message-${role}`;
+  el.textContent = text;
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendForgeHandoffLink(container) {
+  const el = document.createElement('a');
+  el.href = MINT_TELEGRAM_URL;
+  el.target = '_blank';
+  el.rel = 'noopener';
+  el.style.cssText = 'align-self:flex-start;color:var(--accent-magenta);font-size:0.82rem;border-bottom:1px solid rgba(229,22,154,0.3);padding-bottom:2px;';
+  el.textContent = 'Continue with a human on Telegram →';
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendForgeTyping(container) {
+  const el = document.createElement('div');
+  el.className = 'forge-fab-message forge-fab-message-assistant forge-fab-typing';
+  el.id = 'forgeFabTyping';
+  el.innerHTML = '<span></span><span></span><span></span>';
+  container.appendChild(el);
+  container.scrollTop = container.scrollHeight;
+}
+
+function removeForgeTyping() {
+  const el = document.getElementById('forgeFabTyping');
+  if (el) el.remove();
+}
+
+function initForgeFab() {
+  document.body.appendChild(buildForgeFabMarkup());
+
+  const toggleBtn = document.getElementById('forgeFabToggle');
+  const iconChat = document.getElementById('forgeFabIconChat');
+  const iconClose = document.getElementById('forgeFabIconClose');
+  const panel = document.getElementById('forgeFabPanel');
+  const messagesEl = document.getElementById('forgeFabMessages');
+  const form = document.getElementById('forgeFabForm');
+  const input = document.getElementById('forgeFabInput');
+
+  let opened = false;
+  let sending = false;
+
+  async function openPanel() {
+    panel.hidden = false;
+    iconChat.style.display = 'none';
+    iconClose.style.display = 'block';
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    input.focus();
+
+    if (opened) return;
+    opened = true;
+
+    try {
+      const { messages } = await callMintChat('history', {});
+      if (messages && messages.length) {
+        messages.forEach((m) => appendForgeMessage(messagesEl, m.role, m.content));
+        return;
+      }
+    } catch (e) {
+      console.error('forge-fab: history load failed', e);
+    }
+    appendForgeMessage(messagesEl, 'assistant', MINT_GREETING);
+  }
+
+  function closePanel() {
+    panel.hidden = true;
+    iconChat.style.display = 'block';
+    iconClose.style.display = 'none';
+    toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    if (panel.hidden) openPanel();
+    else closePanel();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || sending) return;
+
+    appendForgeMessage(messagesEl, 'user', text);
+    input.value = '';
+    sending = true;
+    input.disabled = true;
+    appendForgeTyping(messagesEl);
+
+    try {
+      const result = await callMintChat('message', { message: text });
+      removeForgeTyping();
+      appendForgeMessage(messagesEl, 'assistant', result.reply);
+      if (result.needsHuman) appendForgeHandoffLink(messagesEl);
+    } catch (err) {
+      console.error('forge-fab: message failed', err);
+      removeForgeTyping();
+      appendForgeMessage(messagesEl, 'assistant', MINT_ERROR_REPLY);
+      appendForgeHandoffLink(messagesEl);
+    } finally {
+      sending = false;
+      input.disabled = false;
+      input.focus();
+    }
   });
 }
 
@@ -785,6 +908,7 @@ function initMarketingPackagesTab(profile) {
   initMarketingPackagesTab(profile);
   renderProjectsPanel(userId);
   renderBillingPanel(userId);
+  initForgeFab();
 
   document.getElementById('logoutBtn').addEventListener('click', logOut);
 })();

@@ -6,6 +6,7 @@
 <title>Create your account — M&amp;MCore Agency</title>
 <link rel="stylesheet" href="main.css">
 <link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="chat-widget.css">
 </head>
 <body>
 
@@ -46,7 +47,8 @@
     </form>
 
     <p class="auth-footer">Already have an account? <a href="login.html">Log in</a></p>
-    <p style="text-align:center;margin-top:var(--space-md);">
+    <p style="text-align:center;margin-top:var(--space-md);display:flex;gap:0.6rem;justify-content:center;">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="history.back()">← Back</button>
       <a href="index.html" class="btn btn-primary btn-sm auth-home-btn">Home</a>
     </p>
   </div>
@@ -55,5 +57,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="supabase-client.js"></script>
 <script src="auth.js"></script>
+<script src="chat-widget.js"></script>
 </body>
 </html>

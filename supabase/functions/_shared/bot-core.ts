@@ -87,7 +87,7 @@ const MAX_TASK_ID_ATTEMPTS = 3;
 const RATE_LIMIT_MESSAGE =
   "You're sending messages a bit too quickly — please wait a few minutes and try again.";
 const GENERIC_ERROR_MESSAGE =
-  'Something went wrong on our end. Please try again in a moment, or reach out directly: https://t.me/mmcore_managers';
+  'Something went wrong on our end. Please try again in a moment, or reach out directly: https://t.me/AgenticCoreAgency';
 
 // Additive context for the 'mint' channel only, appended on top of the
 // same BUSINESS_KNOWLEDGE_PROMPT every channel shares -- not a
