@@ -101,7 +101,13 @@ if (loginForm) {
       return;
     }
 
-    window.location.href = 'dashboard.html';
+    // Send the visitor back to whatever page bounced them here (e.g.
+    // admin.html via requireAuth's redirect param) instead of always
+    // dashboard.html. Restricted to a bare same-site filename so a
+    // crafted query string can't be used as an open redirect.
+    const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+    const safeRedirect = redirectParam && /^[a-zA-Z0-9_-]+\.html$/.test(redirectParam) ? redirectParam : 'dashboard.html';
+    window.location.href = safeRedirect;
   });
 }
 
@@ -175,7 +181,8 @@ async function logOut() {
 async function requireAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
-    window.location.href = 'login.html';
+    const here = location.pathname.split('/').pop();
+    window.location.href = `login.html?redirect=${encodeURIComponent(here)}`;
     return null;
   }
   return session;
