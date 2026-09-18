@@ -209,6 +209,70 @@ function renderProfiles(profiles) {
   });
 }
 
+// Website Visits: reads the page_views table logged by visit-tracker.js
+// on every public page. admin_select_all_page_views (see the
+// admin_select_page_views migration) is what lets an admin session read
+// every row here -- the table's only other policy allows anon insert,
+// nothing else.
+async function loadVisits() {
+  const { data, error } = await supabaseClient
+    .from('page_views')
+    .select('path, visitor_id, created_at')
+    .order('created_at', { ascending: false })
+    .limit(20000);
+
+  if (error) {
+    console.error('loadVisits failed:', error);
+    return;
+  }
+
+  const rows = data || [];
+  const uniqueVisitors = new Set(rows.map((r) => r.visitor_id).filter(Boolean));
+
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const sevenDaysAgo = new Date(startOfToday.getTime() - 6 * 86400000);
+
+  const viewsToday = rows.filter((r) => new Date(r.created_at) >= startOfToday).length;
+  const viewsWeek = rows.filter((r) => new Date(r.created_at) >= sevenDaysAgo).length;
+
+  document.getElementById('visitsTotal').textContent = rows.length.toLocaleString();
+  document.getElementById('visitsUnique').textContent = uniqueVisitors.size.toLocaleString();
+  document.getElementById('visitsToday').textContent = viewsToday.toLocaleString();
+  document.getElementById('visitsWeek').textContent = viewsWeek.toLocaleString();
+
+  const dayCounts = new Map();
+  for (let i = 13; i >= 0; i--) {
+    const day = new Date(startOfToday.getTime() - i * 86400000);
+    dayCounts.set(day.toISOString().slice(0, 10), 0);
+  }
+  rows.forEach((r) => {
+    const key = r.created_at.slice(0, 10);
+    if (dayCounts.has(key)) dayCounts.set(key, dayCounts.get(key) + 1);
+  });
+  const maxDayCount = Math.max(1, ...dayCounts.values());
+  document.getElementById('visitsDailyBars').innerHTML = [...dayCounts.entries()].map(([day, count]) => {
+    const label = new Date(day + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const pct = Math.round((count / maxDayCount) * 100);
+    return `
+      <div class="visits-bar-row">
+        <span>${label}</span>
+        <span class="visits-bar-track"><span class="visits-bar-fill" style="width:${pct}%"></span></span>
+        <span class="visits-bar-count">${count}</span>
+      </div>
+    `;
+  }).join('');
+
+  const pageCounts = new Map();
+  rows.forEach((r) => {
+    pageCounts.set(r.path, (pageCounts.get(r.path) || 0) + 1);
+  });
+  const topPages = [...pageCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 15);
+  document.querySelector('#visitsPagesTable tbody').innerHTML = topPages.length
+    ? topPages.map(([path, count]) => `<tr><td>${path}</td><td>${count}</td></tr>`).join('')
+    : emptyRow(2, 'No visits logged yet.');
+}
+
 (async () => {
   const session = await requireAuth();
   if (!session) return;
@@ -226,6 +290,7 @@ function renderProfiles(profiles) {
 
   document.getElementById('adminBody').style.display = 'block';
   loadAll();
+  loadVisits();
 
   document.getElementById('logoutBtn').addEventListener('click', logOut);
 })();

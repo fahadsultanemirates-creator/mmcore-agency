@@ -45,6 +45,25 @@
   <div class="container">
 
     <div class="admin-section">
+      <h2>Website Visits</h2>
+      <div class="visits-stats">
+        <div class="visits-stat"><span class="visits-stat-value" id="visitsTotal">—</span><span class="visits-stat-label">Total page views</span></div>
+        <div class="visits-stat"><span class="visits-stat-value" id="visitsUnique">—</span><span class="visits-stat-label">Unique visitors</span></div>
+        <div class="visits-stat"><span class="visits-stat-value" id="visitsToday">—</span><span class="visits-stat-label">Views today</span></div>
+        <div class="visits-stat"><span class="visits-stat-value" id="visitsWeek">—</span><span class="visits-stat-label">Views last 7 days</span></div>
+      </div>
+      <p class="admin-sub" style="margin-bottom:var(--space-sm);">Last 14 days</p>
+      <div class="visits-bars" id="visitsDailyBars"></div>
+      <p class="admin-sub" style="margin:var(--space-lg) 0 var(--space-sm);">Top pages</p>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="visitsPagesTable">
+          <thead><tr><th>Page</th><th>Views</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="admin-section">
       <h2>All Requests</h2>
       <div class="admin-table-wrap">
         <table class="admin-table" id="requestsTable">
