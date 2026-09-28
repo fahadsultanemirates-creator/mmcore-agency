@@ -719,7 +719,7 @@ function initMarketingPackagesTab(profile) {
       ${pkg.price !== null
         ? `<button type="button" class="btn ${pkg.featured ? 'btn-primary' : 'btn-secondary'}" data-pkg-idx="${idx}">Get started — ${formatMoney(pkg.price)}/mo</button>`
         : `<a href="https://t.me/AgenticCoreAgency" class="btn btn-secondary" target="_blank" rel="noopener">Talk to us</a>`}
-      <p class="dash-card-note" id="marketingPkgNote-${idx}"></p>
+      <div class="dash-card-note" id="marketingPkgNote-${idx}"></div>
     </div>
   `).join('');
 
